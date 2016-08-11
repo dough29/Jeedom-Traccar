@@ -5,7 +5,9 @@ Ajouter un équipement en utilisant l'identifiant de votre tracker enregsitré s
 Du côté du serveur Traccar il faut éditer le fichier de configuration traccar.xml et ajouter les lignes :
 
 	<entry key='forward.enable'>true</entry>
-	<entry key='forward.url'>http://<IP Jeedom>:<port Jeedom>/core/api/jeeApi.php?api=<clé API>&type=traccar&id={uniqueId}&latitude={latitude}&longitude={longitude}</entry>
+	<entry key='forward.url'>http://<IP Jeedom>:<port Jeedom>/core/api/jeeApi.php?api=<clé API>&amp;type=traccar&amp;id={uniqueId}&amp;latitude={latitude}&amp;longitude={longitude}</entry>
+	
+Bien veiller à ce que les "&" soient représentés par leur code HTML "&amp;" !
 
 Remplacer :
   - <IP Jeedom> : par l'IP de la machine hébergant votre Jeedom
