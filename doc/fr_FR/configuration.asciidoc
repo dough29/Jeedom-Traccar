@@ -1,0 +1,13 @@
+=== Configuration du plugin
+
+Ajouter un équipement en utilisant l'identifiant de votre tracker enregsitré sur Traccar et en l'associant à un de vos équipements Geoloc de type dynamique.
+
+Du côté du serveur Traccar il faut éditer le fichier de configuration traccar.xml et ajouter les lignes :
+
+	<entry key='forward.enable'>true</entry>
+	<entry key='forward.url'>http://<IP Jeedom>:<port Jeedom>/core/api/jeeApi.php?api=<clé API>&type=traccar&id={uniqueId}&latitude={latitude}&longitude={longitude}</entry>
+
+Remplacer :
+  - <IP Jeedom> : par l'IP de la machine hébergant votre Jeedom
+  - <port Jeedom> : par le port HTTP de votre Jeedom
+  - <clé API> : par la clé API de votre Jeedom disponible dans l'écran de configuration générale
