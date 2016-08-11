@@ -32,6 +32,9 @@ class traccar extends eqLogic {
 		if ($traccar->getEqType_name() != 'traccar') {
 			throw new Exception(__('Traccar - cet équipement n\'est pas de type traccar : ', __FILE__) . init('id'));
 		}
+		if ($traccar->getIsEnable() != 1) {
+			throw new Exception(__('Traccar - cet équipement n\'est pas activé : ', __FILE__) . init('id'));
+		}
 		
 		$geolocId = $traccar->getConfiguration('geoloc');
 		
