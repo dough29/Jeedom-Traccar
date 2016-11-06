@@ -2,8 +2,9 @@
 if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
-sendVarToJS('eqType', 'traccar');
-$eqLogics = eqLogic::byType('traccar');
+$plugin = plugin::byId('traccar');
+sendVarToJS('eqType', $plugin->getId());
+$eqLogics = eqLogic::byType($plugin->getId());
 ?>
 <div class="row row-overflow">
 	<div class="col-lg-2 col-md-3 col-sm-4">
@@ -14,7 +15,7 @@ $eqLogics = eqLogic::byType('traccar');
 				<?php
 				foreach ($eqLogics as $eqLogic) {
 					$opacity = ($eqLogic->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
-					echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $eqLogic->getId() . '"  style="' . $opacity . '"><a>' . $eqLogic->getHumanName(true) . '</a></li>';
+					echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $eqLogic->getId() . '" style="' . $opacity . '"><a>' . $eqLogic->getHumanName(true) . '</a></li>';
 				}
 				?>
 			</ul>
@@ -35,7 +36,7 @@ $eqLogics = eqLogic::byType('traccar');
 				$opacity = ($eqLogic->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
 				echo '			<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color : #ffffff; height : 200px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;' . $opacity . '" >';
 				echo "				<center>";
-				echo '					<img src="plugins/traccar/doc/images/traccar_icon.png" height="105" width="95" />';
+				echo '					<img src="' . $plugin->getPathImgIcon() . '" height="105" width="95" />';
 				echo "				</center>";
 				echo '				<span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;"><center>' . $eqLogic->getHumanName(true, true) . '</center></span>';
 				echo '			</div>';
@@ -44,27 +45,49 @@ $eqLogics = eqLogic::byType('traccar');
 		</div>
 	</div>
 	<div class="col-lg-10 col-md-9 col-sm-8 eqLogic" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
-		<div class="row">
-			<div class="col-sm-6">
+		<a class="btn btn-success eqLogicAction pull-right" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}</a>
+		<a class="btn btn-danger eqLogicAction pull-right" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="home" role="tab" data-toggle="tab"><i class="fa fa-tachometer"></i> {{Equipement}}</a></li>
+			<li role="presentation"><a href="#commandtab" aria-controls="profile" role="tab" data-toggle="tab"><i class="fa fa-list-alt"></i> {{Commandes}}</a></li>
+		</ul>
+		<div class="tab-content" style="height:calc(100% - 50px);overflow:auto;overflow-x: hidden;">
+			<div role="tabpanel" class="tab-pane active" id="eqlogictab">
 				<form class="form-horizontal">
 					<fieldset>
-						<legend><i class="fa fa-arrow-circle-left eqLogicAction cursor" data-action="returnToThumbnailDisplay"></i> {{Général}}<i class='fa fa-cogs eqLogicAction pull-right cursor expertModeVisible' data-action='configure'></i></legend>
+						<legend>
+							<i class="fa fa-arrow-circle-left eqLogicAction cursor" data-action="returnToThumbnailDisplay"></i> {{Général}}
+							<i class='fa fa-cogs eqLogicAction pull-right cursor expertModeVisible' data-action='configure'></i>
+						</legend>
 						<div class="form-group">
-							<label class="col-sm-4 control-label">{{Nom de l'équipement}}</label>
-							<div class="col-sm-8">
+							<label class="col-sm-2 control-label">{{Nom de l'équipement Traccar}}</label>
+							<div class="col-sm-3">
 								<input type="text" class="eqLogicAttr form-control" data-l1key="id" style="display : none;" />
-								<input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'équipement}}"/>
+								<input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'équipement Traccar}}"/>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-sm-4 control-label">{{Identifiant du tracker}}</label>
-							<div class="col-sm-8">
+							<label class="col-sm-2 control-label" >{{Objet parent}}</label>
+							<div class="col-sm-3">
+								<select class="form-control eqLogicAttr" data-l1key="object_id">
+									<option value="">{{Aucun}}</option>
+									<?php
+									foreach (object::all() as $object) {
+										echo '<option value="' . $object->getId() . '">' . $object->getName() . '</option>';
+									}
+									?>
+								</select>
+							</div>
+						</div>
+						<div class="form-group expertModeVisible">
+							<label class="col-sm-2 control-label">{{Identifiant du tracker}}</label>
+							<div class="col-sm-2">
 								<input type="text" class="eqLogicAttr form-control" data-l1key="logicalId" placeholder="{{Identifiant du tracker}}"/>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-sm-4 control-label">{{Objet Geoloc associé}}</label>
-							<div class="col-sm-8">
+							<label class="col-sm-2 control-label">{{Objet Geoloc associé}}</label>
+							<div class="col-sm-3">
 								<select class="form-control eqLogicAttr configuration" id="geoloc" data-l1key="configuration" data-l2key="geoloc">
 									<option value="">{{Aucun}}</option>
 										<?php
@@ -85,26 +108,31 @@ $eqLogics = eqLogic::byType('traccar');
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-sm-4 control-label"></label>
-							<div class="col-sm-8">
+							<label class="col-sm-2 control-label"></label>
+							<div class="col-sm-9">
 								<input type="checkbox" class="eqLogicAttr bootstrapSwitch" data-label-text="{{Activer}}" data-l1key="isEnable" checked/>
+								<input type="checkbox" class="eqLogicAttr bootstrapSwitch" data-label-text="{{Visible}}" data-l1key="isVisible" checked/>
 							</div>
 						</div>
 					</fieldset>
 				</form>
 			</div>
-			<div class="col-sm-6"></div>
+			<div role="tabpanel" class="tab-pane" id="commandtab">
+				<table id="table_cmd" class="table table-bordered table-condensed">
+					<thead>
+						<tr>
+							<th style="width: 50px;">#</th>
+							<th>{{Nom}}</th>
+							<th style="width: 100px;"></th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
 		</div>
-		<form class="form-horizontal">
-			<fieldset>
-				<div class="form-actions">
-					<a class="btn btn-danger eqLogicAction" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
-					<a class="btn btn-success eqLogicAction" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}</a>
-				</div>
-			</fieldset>
-		</form>
 	</div>
 </div>
-<?php
-include_file('core', 'plugin.template', 'js');
-?>
+
+<?php include_file('desktop', 'traccar', 'js', 'traccar');?>
+<?php include_file('core', 'plugin.template', 'js');?>

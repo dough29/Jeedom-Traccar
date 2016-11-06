@@ -5,3 +5,7 @@ Création du plugin
 ==== Version 1.1 - 06/11/2016
 
 Les équipements se créent maintenant de façons automatisée, il faut tout de même les activer et les associer à leur équipement Geoloc
+
+==== Version 1.2 - 06/11/2016
+
+Ajout de la possibilité de recevoir les événements Traccar 'geofenceEnter' et 'geofenceExit' pour l'entrée et la sortie d'une zone

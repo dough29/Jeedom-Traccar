@@ -19,64 +19,105 @@
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
 class traccar extends eqLogic {
-	/*     * *************************Attributs****************************** */
-
-	/*     * ***********************Methode static*************************** */
-
 	public static function event() {
-		log::add('traccar', 'debug', 'Reception d\'un événement tracker Id = '.init('id'));
-		$traccar = traccar::byLogicalId(init('id'), 'traccar');
-		
-		if (!is_object($traccar)) {
-			log::add('traccar', 'debug', 'Tracker inconnu - tracker Id = '.init('id'));
+		// Réception d'un événement
+		if (init('action') != null) {
+			log::add('traccar', 'debug', 'Reception d\'un événement');
 			
-			log::add('traccar', 'debug', 'Création de l\'équipement - tracker Id = '.init('id'));
-			$traccar = new eqLogic();
-			$traccar->setEqType_name('traccar');
-			$traccar->setIsEnable(0);
-			$traccar->setLogicalId(init('id'));
-			$traccar->setName('Tracker '.init('id'));
-			$traccar->save();
+			$traccarEvent = json_decode(file_get_contents('php://input'));
 			
-			log::add('traccar', 'debug', 'Tracker Id = '.init('id').' créé');
+			log::add('traccar', 'debug', 'Trame JSON : '.file_get_contents('php://input'));
+			
+			$traccarUniqueId = $traccarEvent->device->uniqueId;
+			$traccarEventType = $traccarEvent->event->type;
+			
+			$traccar = traccar::byLogicalId($traccarUniqueId, 'traccar');
+			
+			if ($traccar->getIsEnable() != 1) {
+				log::add('traccar', 'debug', 'Cet équipement n\'est pas activé - tracker Id = '.$traccarUniqueId);
+				throw new Exception(__('Traccar - cet équipement n\'est pas activé : ', __FILE__) . $traccarUniqueId);
+			}
+			
+			switch ($traccarEventType) {
+				//byTypeEqLogicNameCmdName
+				case 'geofenceEnter':
+					$traccarCmd = traccarCmd::byEqLogicIdCmdName($traccar->getId(), $traccarEvent->geofence->name);
+					if (!is_object($traccarCmd)) {
+						log::add('traccar', 'debug', 'Le nom de commande '.$traccarEvent->geofence->name.' n\'existe pas pour l\'équipement '.$traccarUniqueId);
+						$traccarCmd = traccar::createTraccarCmd($traccar->getId(), $traccarEvent->geofence->name);
+					}
+					$traccarCmd->event(true);
+					break;
+				case 'geofenceExit':
+					$traccarCmd = traccarCmd::byEqLogicIdCmdName($traccar->getId(), $traccarEvent->geofence->name);
+					if (!is_object($traccarCmd)) {
+						log::add('traccar', 'debug', 'Le nom de commande '.$traccarEvent->geofence->name.' n\'existe pas pour l\'équipement '.$traccarUniqueId);
+						$traccarCmd = traccar::createTraccarCmd($traccar->getId(), $traccarEvent->geofence->name);
+					}
+					$traccarCmd->event(false);
+					break;
+				default:
+					log::add('traccar', 'debug', 'L\'événement '.$traccarEventType.' n\'est pas implémenté');
+			}
 		}
-		
-		if ($traccar->getEqType_name() != 'traccar') {
-			log::add('traccar', 'debug', 'Cet équipement n\'est pas de type traccar - tracker Id = '.init('id'));
-			throw new Exception(__('Traccar - cet équipement n\'est pas de type traccar : ', __FILE__) . init('id'));
+		// Réception d'une position
+		else {
+			log::add('traccar', 'debug', 'Reception d\'une position tracker Id = '.init('id'));
+			$traccar = traccar::byLogicalId(init('id'), 'traccar');
+			
+			if (!is_object($traccar) && null != init('id')) {
+				log::add('traccar', 'debug', 'Tracker inconnu - tracker Id = '.init('id'));
+				
+				log::add('traccar', 'debug', 'Création de l\'équipement - tracker Id = '.init('id'));
+				$traccar = new eqLogic();
+				$traccar->setEqType_name('traccar');
+				$traccar->setIsEnable(0);
+				$traccar->setIsVisible(0);
+				$traccar->setLogicalId(init('id'));
+				$traccar->setName('Tracker '.init('id'));
+				$traccar->save();
+				
+				log::add('traccar', 'debug', 'Tracker Id = '.init('id').' créé');
+			}
+			
+			if ($traccar->getEqType_name() != 'traccar') {
+				log::add('traccar', 'debug', 'Cet équipement n\'est pas de type traccar - tracker Id = '.init('id'));
+				throw new Exception(__('Traccar - cet équipement n\'est pas de type traccar : ', __FILE__) . init('id'));
+			}
+			if ($traccar->getIsEnable() != 1) {
+				log::add('traccar', 'debug', 'Cet équipement n\'est pas activé - tracker Id = '.init('id'));
+				throw new Exception(__('Traccar - cet équipement n\'est pas activé : ', __FILE__) . init('id'));
+			}
+			
+			$geolocId = $traccar->getConfiguration('geoloc');
+			
+			if (null == $geolocId) {
+				log::add('traccar', 'debug', 'Cet équipement n\'est pas lié à un objet Geoloc - tracker Id = '.init('id'));
+				throw new Exception(__('Traccar - cet équipement n\'est pas lié à un objet Geoloc : ', __FILE__) . init('id'));
+			}
+			
+			$geoloc = geolocCmd::byId($geolocId);
+			
+			$geoloc->event(init('latitude').",".init('longitude'));
+			$geoloc->getEqLogic()->refreshWidget();
 		}
-		if ($traccar->getIsEnable() != 1) {
-			log::add('traccar', 'debug', 'Cet équipement n\'est pas activé - tracker Id = '.init('id'));
-			throw new Exception(__('Traccar - cet équipement n\'est pas activé : ', __FILE__) . init('id'));
-		}
-		
-		$geolocId = $traccar->getConfiguration('geoloc');
-		
-		if (null == $geolocId) {
-			log::add('traccar', 'debug', 'Cet équipement n\'est pas lié à un objet Geoloc - tracker Id = '.init('id'));
-			throw new Exception(__('Traccar - cet équipement n\'est pas lié à un objet Geoloc : ', __FILE__) . init('id'));
-		}
-		
-		$geoloc = geolocCmd::byId($geolocId);
-		
-		$geoloc->event(init('latitude').",".init('longitude'));
-		$geoloc->getEqLogic()->refreshWidget();
 	}
-
-	/*     * *********************Methode d'instance************************* */
-
+	
+	function createTraccarCmd($traccarId, $traccarCmdName) {
+		$traccarCmd = new traccarCmd();
+		$traccarCmd->setName($traccarCmdName);
+		$traccarCmd->setEqLogic_id($traccarId);
+		$traccarCmd->setEqType('traccar');
+		$traccarCmd->setType('info');
+		$traccarCmd->setSubType('binary');
+		$traccarCmd->save();
+		
+		return $traccarCmd;
+	}
 }
 
 class traccarCmd extends cmd {
-	/*     * *************************Attributs****************************** */
-	
-	/*     * ***********************Methode static*************************** */
-	
-	/*     * *********************Methode d'instance************************* */
-
-	/*     * ***********************Methode static*************************** */
-
-	/*     * *********************Methode d'instance************************* */
+	public function execute($_options = null) {
+	}
 }
-
 ?>
