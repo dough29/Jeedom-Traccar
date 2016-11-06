@@ -24,21 +24,36 @@ class traccar extends eqLogic {
 	/*     * ***********************Methode static*************************** */
 
 	public static function event() {
+		log::add('traccar', 'debug', 'Reception d\'un événement tracker Id = '.init('id'));
 		$traccar = traccar::byLogicalId(init('id'), 'traccar');
 		
 		if (!is_object($traccar)) {
-			throw new Exception(__('Traccar - tracker inconnu : ', __FILE__) . init('id'));
+			log::add('traccar', 'debug', 'Tracker inconnu - tracker Id = '.init('id'));
+			
+			log::add('traccar', 'debug', 'Création de l\'équipement - tracker Id = '.init('id'));
+			$traccar = new eqLogic();
+			$traccar->setEqType_name('traccar');
+			$traccar->setIsEnable(0);
+			$traccar->setLogicalId(init('id'));
+			$traccar->setName('Tracker '.init('id'));
+			$traccar->save();
+			
+			log::add('traccar', 'debug', 'Tracker Id = '.init('id').' créé');
 		}
+		
 		if ($traccar->getEqType_name() != 'traccar') {
+			log::add('traccar', 'debug', 'Cet équipement n\'est pas de type traccar - tracker Id = '.init('id'));
 			throw new Exception(__('Traccar - cet équipement n\'est pas de type traccar : ', __FILE__) . init('id'));
 		}
 		if ($traccar->getIsEnable() != 1) {
+			log::add('traccar', 'debug', 'Cet équipement n\'est pas activé - tracker Id = '.init('id'));
 			throw new Exception(__('Traccar - cet équipement n\'est pas activé : ', __FILE__) . init('id'));
 		}
 		
 		$geolocId = $traccar->getConfiguration('geoloc');
 		
 		if (null == $geolocId) {
+			log::add('traccar', 'debug', 'Cet équipement n\'est pas lié à un objet Geoloc - tracker Id = '.init('id'));
 			throw new Exception(__('Traccar - cet équipement n\'est pas lié à un objet Geoloc : ', __FILE__) . init('id'));
 		}
 		

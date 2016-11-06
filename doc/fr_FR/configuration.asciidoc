@@ -1,6 +1,10 @@
 === Configuration du plugin
 
-Ajouter un équipement en utilisant l'identifiant de votre tracker enregsitré sur Traccar et en l'associant à un de vos équipements Geoloc de type dynamique.
+Les équipements Traccar se créent automatiquement dès lors que votre serveur Traccar est bien paramétré (voir chapitre suivant).
+
+Une fois que votre tracker apparaît il faut l'éditer pour l'activer et lui associer un équipement Geoloc existant.
+
+=== Configuration du serveur Traccar
 
 Du côté du serveur Traccar il faut éditer le fichier de configuration traccar.xml et ajouter les lignes :
 

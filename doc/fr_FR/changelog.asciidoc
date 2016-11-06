@@ -1,3 +1,7 @@
 ==== Version 1 - 11/08/2016
 
 Création du plugin
+
+==== Version 1.1 - 06/11/2016
+
+Les équipements se créent maintenant de façons automatisée, il faut tout de même les activer et les associer à leur équipement Geoloc
