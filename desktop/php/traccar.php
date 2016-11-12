@@ -95,7 +95,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 											foreach (eqLogic::byType('geoloc') as $geoloc) {
 												foreach (geolocCmd::byEqLogicId($geoloc->getId()) as $geoinfo) {
 													if ($geoinfo->getConfiguration('mode') == 'dynamic') {
-														echo '									<option value="' . $geoinfo->getId() . '">' . $geoinfo->getName() . '</option>';
+														echo '									<option value="' . $geoinfo->getId() . '">' . $geoloc->getName() . ' > ' . $geoinfo->getName() . '</option>';
 													}
 												}
 											}
@@ -123,6 +123,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 						<tr>
 							<th style="width: 50px;">#</th>
 							<th>{{Nom}}</th>
+							<th style="width: 200px;">{{Paramètres}}</th>
 							<th style="width: 100px;"></th>
 						</tr>
 					</thead>

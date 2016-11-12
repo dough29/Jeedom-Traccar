@@ -39,4 +39,12 @@ Remplacer :
   - <port Jeedom> : par le port HTTP de votre Jeedom
   - <clé API> : par la clé API de votre Jeedom disponible dans l'écran de configuration générale
 
+Traccar propose un événement "deviceMoving" qui peu envoyer trop de notifications en fonction du tracker utilisé.
+
+Il est possible de paramétrer dans Traccar un seuil de détection de mouvement, par exemple sur ceux que j'utilise j'ai paramétré le seuil à 0.4 km/h comme suit :
+
+    <entry key='event.motion.speedThreshold'>0.4</entry>
+
+Modifier ce paramètre à  votre guise selon le comportement de vos trackers.
+
 Relancer ensuite le serveur Traccar pour prendre en compte les changements.
