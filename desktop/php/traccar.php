@@ -120,7 +120,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					<thead>
 						<tr>
 							<th style="width: 50px;">#</th>
-							<th>{{Nom}}</th>
+							<th style="width: 200px;">{{Nom}}</th>
 							<th style="width: 200px;">{{Paramètres}}</th>
 							<th style="width: 100px;"></th>
 						</tr>
