@@ -14,21 +14,18 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-$(function() {
-    $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
-});
+$("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
+
 
 function addCmdToTable(_cmd) {
 	if (!isset(_cmd)) {
-		var _cmd = {configuration: {}};
+        var _cmd = {configuration: {}};
 	}
-	if (!isset(_cmd.configuration)) {
-		_cmd.configuration = {};
-	}
+
 	var tr = '<tr class="cmd" data-cmd_id="' + init(_cmd.id) + '">';
 		tr += '<td><span class="cmdAttr" data-l1key="id"></span></td>';
 	    tr += '<td><span class="cmdAttr" data-l1key="name"></span></td>';
-		tr += '<td><span><input type="checkbox" class="cmdAttr bootstrapSwitch" data-size="mini" data-label-text="{{Afficher}}" data-l1key="isVisible" checked/></span></td>';
+		tr += '<td><span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" data-size="mini" checked/>{{Afficher}}</label></span></td>';
 		tr += '<td>';
 		if (is_numeric(_cmd.id)) {
 			tr += '<a class="btn btn-default btn-xs cmdAction expertModeVisible" data-action="configure"><i class="fa fa-cogs"></i></a> ';
@@ -38,9 +35,5 @@ function addCmdToTable(_cmd) {
 		tr += '</td>';
 		tr += '</tr>';
 	$('#table_cmd tbody').append(tr);
-	$('#table_cmd tbody tr:last').setValues(_cmd, '.cmdAttr');
-	if (isset(_cmd.type)) {
-		$('#table_cmd tbody tr:last .cmdAttr[data-l1key=type]').value(init(_cmd.type));
-	}
-	jeedom.cmd.changeType($('#table_cmd tbody tr:last'), init(_cmd.subType));
+    $('#table_cmd tbody tr:last').setValues(_cmd, '.cmdAttr');
 }
