@@ -1,0 +1,8 @@
+{
+	"id" : "traccar",
+	"name" : "Traccar",
+	"licence" : "AGPL",
+	"author" : "Damien LE GUILLOU",
+	"require" : "3.0",
+	"category" : "organization"
+}
