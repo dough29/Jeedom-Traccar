@@ -14,14 +14,14 @@ Les commandes Traccar permettant de défnir si un équipement est présent ou no
 Du côté du serveur Traccar il faut éditer le fichier de configuration traccar.xml et ajouter les lignes :
 
 	<entry key='forward.enable'>true</entry>
-	<entry key='forward.url'>http://<IP Jeedom>:<port Jeedom>/core/api/jeeApi.php?api=<clé API>&amp;type=traccar&amp;id={uniqueId}&amp;latitude={latitude}&amp;longitude={longitude}</entry>
+	<entry key='forward.url'>http://<IP Jeedom>:<port Jeedom>/plugins/traccar/core/api/jeeTraccar.php?apikey=<clé API>&amp;type=traccar&amp;id={uniqueId}&amp;latitude={latitude}&amp;longitude={longitude}</entry>
 	
 Bien veiller à ce que les "&" soient représentés par leur code HTML "&amp;" !
 
 Remplacer :
   - <IP Jeedom> : par l'IP de la machine hébergant votre Jeedom
   - <port Jeedom> : par le port HTTP de votre Jeedom
-  - <clé API> : par la clé API de votre Jeedom disponible dans l'écran de configuration générale
+  - <clé API> : par la clé API du plugin Traccar disponible dans l'écran de configuration API
 
 Relancer ensuite le serveur Traccar pour prendre en compte les changements.
 
@@ -30,14 +30,14 @@ Relancer ensuite le serveur Traccar pour prendre en compte les changements.
 Editer le fichier de configuration traccar.xml et ajouter les lignes :
 
 	<entry key='event.forward.enable'>true</entry>
-	<entry key='event.forward.url'>http://<IP Jeedom>:<port Jeedom>/core/api/jeeApi.php?api=<clé API>&amp;type=traccar&amp;action=event</entry>
+	<entry key='event.forward.url'>http://<IP Jeedom>:<port Jeedom>/plugins/traccar/core/api/jeeTraccar.php?apikey=<clé API>&amp;type=traccar&amp;action=event</entry>
 
 Bien veiller à ce que les "&" soient représentés par leur code HTML "&amp;" !
 
 Remplacer :
   - <IP Jeedom> : par l'IP de la machine hébergant votre Jeedom
   - <port Jeedom> : par le port HTTP de votre Jeedom
-  - <clé API> : par la clé API de votre Jeedom disponible dans l'écran de configuration générale
+  - <clé API> : par la clé API du plugin Traccar disponible dans l'écran de configuration API
 
 Traccar propose un événement "deviceMoving" qui peu envoyer trop de notifications en fonction du tracker utilisé.
 
