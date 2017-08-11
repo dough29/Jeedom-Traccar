@@ -19,36 +19,6 @@
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
 class traccar extends eqLogic {
-	public static function event() {
-		// Réception d'une action événement
-		if (init('action') != null && init('action') === 'event') {
-			// Récupération du flux JSON
-			$traccarEvent = json_decode(file_get_contents('php://input'));
-			
-			// Définition des variables
-			$traccarUniqueId = $traccarEvent->device->uniqueId;
-			$traccarEventType = $traccarEvent->event->type;
-			
-			// Récupération de l'équipement Traccar
-			$traccar = traccar::getTraccarByUniqueId($traccarUniqueId);
-			
-			log::add('traccar', 'info', 'Reception d\'un événement '.$traccarEventType.' - tracker '.$traccarUniqueId.' - '.$traccar->getName());
-			log::add('traccar', 'debug', 'Trame JSON : '.file_get_contents('php://input'));
-			
-			// Appel de la fonction d'événement Traccar
-			traccar::traccarEvent($traccar, $traccarEvent);
-		}
-		// Réception d'une position
-		else {
-			// Récupération de l'équipement Traccar
-			$traccar = traccar::getTraccarByUniqueId(init('id'));
-			
-			log::add('traccar', 'info', 'Reception d\'une position - tracker '.init('id').' - '.$traccar->getName());
-			
-			// Appel de la fonction de position Traccar
-			traccar::traccarPosition($traccar, init('latitude'), init('longitude'));
-		}
-	}
 	
 	// Actions sur réception d'une position
 	function traccarPosition($traccar, $latitude, $longitude) {
@@ -58,7 +28,7 @@ class traccar extends eqLogic {
 		// Vérification de l'identifiant de l'équipement Geoloc associé
 		if (null == $geolocId) {
 			log::add('traccar', 'error', 'Cet équipement n\'est pas lié à un objet Geoloc - tracker '.$traccar->getLogicalId().' - '.$traccar->getName());
-			throw new Exception(__('Traccar - cet équipement n\'est pas lié à un objet Geoloc : ', __FILE__) . $traccar->getLogicalId().' - '.$traccar->getName());
+			return;
 		}
 		
 		// Récupèration de la commande Geoloc
@@ -129,12 +99,12 @@ class traccar extends eqLogic {
 		// Vérification de l'équipement de type Traccar
 		if ($traccar->getEqType_name() != 'traccar') {
 			log::add('traccar', 'error', 'Cet équipement n\'est pas de type traccar - tracker '.$uniqueId.' - '.$traccar->getName());
-			throw new Exception(__('Traccar - cet équipement n\'est pas de type traccar : ', __FILE__) . $uniqueId.' - '.$traccar->getName());
+			return '';
 		}
 		// Vérification de l'équipement actif
 		if ($traccar->getIsEnable() != 1) {
 			log::add('traccar', 'error', 'Cet équipement n\'est pas activé - tracker '.$uniqueId.' - '.$traccar->getName());
-			throw new Exception(__('Traccar - cet équipement n\'est pas activé : ', __FILE__) . $uniqueId.' - '.$traccar->getName());
+			return '';
 		}
 		
 		return $traccar;
