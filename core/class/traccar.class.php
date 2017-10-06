@@ -43,15 +43,17 @@ class traccar extends eqLogic {
 			// Récupération de l'équipement Traccar
 			$traccar = traccar::getTraccarByUniqueId(init('id'));
 			
-			log::add('traccar', 'info', 'Reception d\'une position - tracker '.init('id').' - '.$traccar->getName().' - attributes --> '.init('attributes'));
+			log::add('traccar', 'info', 'Reception d\'une position - tracker '.init('id').' - '.$traccar->getName());
+			log::add('traccar', 'debug', '> speed --> '.init('speed'));
+			log::add('traccar', 'debug', '> attributes --> '.init('attributes'));
 	
 			// Appel de la fonction de position Traccar
-			traccar::traccarPosition($traccar, init('latitude'), init('longitude'), init('attributes'));
+			traccar::traccarPosition($traccar, init('latitude'), init('longitude'), init('speed'), init('attributes'));
 		}
 	}
 	
 	// Actions sur réception d'une position
-	function traccarPosition($traccar, $latitude, $longitude, $jsonAttributes) {
+	function traccarPosition($traccar, $latitude, $longitude, $speed, $jsonAttributes) {
 		// Récupèration de l'identifiant de l'équipement Geoloc associé
 		$geolocId = $traccar->getConfiguration('geoloc');
 		
@@ -84,6 +86,9 @@ class traccar extends eqLogic {
 			// Rafraichissement du widget
 			$geoloc->getEqLogic()->refreshWidget();
 		}
+		
+		$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Vitesse ', 'numeric');
+		$traccarCmd->event(round($speed));
 		
 		// récupération des paramètres 'attributes'
 		$attributes = json_decode($jsonAttributes);

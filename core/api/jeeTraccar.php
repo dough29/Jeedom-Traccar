@@ -46,10 +46,12 @@ else {
 	// Récupération de l'équipement Traccar
 	$traccar = traccar::getTraccarByUniqueId(init('id'));
 	
-	log::add('traccar', 'info', 'Reception d\'une position - tracker '.init('id').' - '.$traccar->getName().' - attributes --> '.init('attributes'));
+	log::add('traccar', 'info', 'Reception d\'une position - tracker '.init('id').' - '.$traccar->getName());
+	log::add('traccar', 'debug', '> speed --> '.init('speed'));
+	log::add('traccar', 'debug', '> attributes --> '.init('attributes'));
 	
 	// Appel de la fonction de position Traccar
-	traccar::traccarPosition($traccar, init('latitude'), init('longitude'), init('attributes'));
+	traccar::traccarPosition($traccar, init('latitude'), init('longitude'), init('speed'), init('attributes'));
 }
 
 return true;
