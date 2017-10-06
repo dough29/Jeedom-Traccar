@@ -102,12 +102,16 @@ $eqLogics = eqLogic::byType($plugin->getId());
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-sm-2 control-label">{{Objet Geoloc associé}}</label>
+							<label class="col-sm-2 control-label">{{Objet de localisation associé}}</label>
 							<div class="col-sm-3">
 								<select class="form-control eqLogicAttr configuration" id="geoloc" data-l1key="configuration" data-l2key="geoloc">
 									<option value="">{{Aucun}}</option>
 										<?php
+										if (!class_exists('geolocCmd') && !class_exists('geotravCmd')) {
+											echo '<option value="none">Plugin Geoloc et/ou Localisation et Trajet (geotrav) absent</option>';
+										}
 										if (class_exists('geolocCmd')) {
+											echo '<optgroup label="Geoloc">';
 											foreach (eqLogic::byType('geoloc') as $geoloc) {
 												foreach (geolocCmd::byEqLogicId($geoloc->getId()) as $geoinfo) {
 													if ($geoinfo->getConfiguration('mode') == 'dynamic') {
@@ -115,9 +119,16 @@ $eqLogics = eqLogic::byType($plugin->getId());
 													}
 												}
 											}
+											echo '</optgroup>';
 										}
-										else {
-											echo '<option value="none">Plugin Geoloc absent</option>';
+										if (class_exists('geotravCmd')) {
+											echo '<optgroup label="Localisation et Trajet (geotrav)">';
+											foreach (eqLogic::byType('geotrav') as $geotrav) {
+												if ($geotrav->getConfiguration('type') == 'location') {
+													echo '									<option value="' . $geotrav->getId() . '">' . $geotrav->getName() . '</option>';
+												}
+											}
+											echo '</optgroup>';
 										}
 										?>
 								</select>

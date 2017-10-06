@@ -64,10 +64,26 @@ class traccar extends eqLogic {
 		// Récupèration de la commande Geoloc
 		$geoloc = geolocCmd::byId($geolocId);
 		
-		// Envoi de l'événement
-		$geoloc->event($latitude.",".$longitude);
-		// Rafraichissement du widget
-		$geoloc->getEqLogic()->refreshWidget();
+		// Si on n'a pas récupéré de commande Geoloc
+		if (!is_object($geoloc)) {
+			log::add('traccar', 'debug', 'Impossible de récupérer l\'objet geolocCmd, tentative de récupération de l\'objet geotrav');
+			
+			// Récupération de l'objet geotrav
+			$geoloc = geotrav::byId($geolocId);
+			if (!is_object($geoloc)) {
+				log::add('traccar', 'error', 'Impossible de récupérer l\'objet geolocCmd ou geotrav !');
+			}
+			else {
+				// Envoi de l'événement à la l'objet geotrav
+				$geoloc->updateGeocodingReverse($latitude.",".$longitude);
+			}
+		}
+		else {
+			// Envoi de l'événement à la commande geoloc
+			$geoloc->event($latitude.",".$longitude);
+			// Rafraichissement du widget
+			$geoloc->getEqLogic()->refreshWidget();
+		}
 	}
 	
 	// Actions sur réception d'un événement
