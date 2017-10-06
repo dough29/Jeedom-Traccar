@@ -33,3 +33,5 @@ Ajout sur l'écran "Configuration" des configurations Traccar "default.xml" pour
 Ajout de la compatibilité avec le plugin Localisation et Trajet (geotrav), la compatibilité avec le plugin Geoloc reste assurée
 Prise en compte de l'état "deviceUnknown", état Traccar entre "online" et "offline". Côté Jeedom il est considéré comme "offline" ("Online" à faux + "Moving" à faux)
 Récupération de l'information "batteryLevel" dans les données "attributes" de Traccar : nécessite l'ajout du paramètre à la configuration Traccar
+Récupération de l'information vitesse "speed"
+Possibilité de d'historiser les commandes
