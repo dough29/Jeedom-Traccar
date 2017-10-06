@@ -27,3 +27,7 @@ Compatibilité Jeedom 3.1
 Migration vers une clé d'API propre au plugin (l'ancienne méthode reste pour le moment fonctionnelle)
 Amélioration de l'écran de gestion du plugin avec accès direct à l'écran "Configuration"
 Ajout sur l'écran "Configuration" des configurations Traccar "default.xml" pour utilisation interne (serveur Traccar sur le même réseau que Jeedom) ou externe
+
+==== Version 1.7 - 07/10/2017
+
+Ajout de la compatibilité avec le plugin Localisation et Trajet (geotrav), la compatibilité avec le plugin Geoloc reste assurée
