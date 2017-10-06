@@ -31,3 +31,4 @@ Ajout sur l'écran "Configuration" des configurations Traccar "default.xml" pour
 ==== Version 1.7 - 07/10/2017
 
 Ajout de la compatibilité avec le plugin Localisation et Trajet (geotrav), la compatibilité avec le plugin Geoloc reste assurée
+Prise en compte de l'état "deviceUnknown", état Traccar entre "online" et "offline". Côté Jeedom il est considéré comme "offline" ("Online" à faux + "Moving" à faux)

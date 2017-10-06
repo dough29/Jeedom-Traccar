@@ -108,7 +108,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									<option value="">{{Aucun}}</option>
 										<?php
 										if (!class_exists('geolocCmd') && !class_exists('geotravCmd')) {
-											echo '<option value="none">Plugin Geoloc et/ou Localisation et Trajet (geotrav) absent</option>';
+											echo '<option value="none">Plugin Geoloc et Localisation et Trajet (geotrav) absent</option>';
 										}
 										if (class_exists('geolocCmd')) {
 											echo '<optgroup label="Geoloc">';
