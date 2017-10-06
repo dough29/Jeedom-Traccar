@@ -102,6 +102,7 @@ class traccar extends eqLogic {
 				$traccarCmd->event(true);
 				break;
 			case 'deviceOffline':
+			case 'deviceUnknown':
 				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Online');
 				$traccarCmd->event(false);
 				
