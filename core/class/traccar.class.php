@@ -43,15 +43,15 @@ class traccar extends eqLogic {
 			// Récupération de l'équipement Traccar
 			$traccar = traccar::getTraccarByUniqueId(init('id'));
 			
-			log::add('traccar', 'info', 'Reception d\'une position - tracker '.init('id').' - '.$traccar->getName());
-			
+			log::add('traccar', 'info', 'Reception d\'une position - tracker '.init('id').' - '.$traccar->getName().' - attributes --> '.init('attributes'));
+	
 			// Appel de la fonction de position Traccar
-			traccar::traccarPosition($traccar, init('latitude'), init('longitude'));
+			traccar::traccarPosition($traccar, init('latitude'), init('longitude'), init('attributes'));
 		}
 	}
 	
 	// Actions sur réception d'une position
-	function traccarPosition($traccar, $latitude, $longitude) {
+	function traccarPosition($traccar, $latitude, $longitude, $jsonAttributes) {
 		// Récupèration de l'identifiant de l'équipement Geoloc associé
 		$geolocId = $traccar->getConfiguration('geoloc');
 		
@@ -84,40 +84,49 @@ class traccar extends eqLogic {
 			// Rafraichissement du widget
 			$geoloc->getEqLogic()->refreshWidget();
 		}
+		
+		// récupération des paramètres 'attributes'
+		$attributes = json_decode($jsonAttributes);
+		foreach($attributes as $attribute => $value) {
+			if ($attribute == 'batteryLevel') {
+				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'batteryLevel ', 'numeric');
+				$traccarCmd->event($value);
+			}
+		}
 	}
 	
 	// Actions sur réception d'un événement
 	function traccarEvent($traccar, $traccarEvent) {
 		switch ($traccarEvent->event->type) {
 			case 'geofenceEnter':
-				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), $traccarEvent->geofence->name);
+				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), $traccarEvent->geofence->name, 'binary');
 				$traccarCmd->event(true);
 				break;
 			case 'geofenceExit':
-				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), $traccarEvent->geofence->name);
+				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), $traccarEvent->geofence->name, 'binary');
 				$traccarCmd->event(false);
 				break;
 			case 'deviceOnline':
-				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Online');
+				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Online', 'binary');
 				$traccarCmd->event(true);
 				break;
 			case 'deviceOffline':
 			case 'deviceUnknown':
-				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Online');
+				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Online', 'binary');
 				$traccarCmd->event(false);
 				
 				// Le tracker offline n'est plus en mouvement
-				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Moving', false);
+				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Moving', 'binary', false);
 				if (is_object($traccarCmd)) {
 					$traccarCmd->event(false);
 				}
 				break;
 			case 'deviceMoving':
-				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Moving');
+				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Moving', 'binary');
 				$traccarCmd->event(true);
 				break;
 			case 'deviceStopped':
-				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Moving');
+				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Moving', 'binary');
 				$traccarCmd->event(false);
 				break;
 			default:
@@ -158,23 +167,23 @@ class traccar extends eqLogic {
 	}
 	
 	// Récupère la commande TraccarCmd et demande sa création si elle n'existe pas
-	function getTraccarCmd($traccarId, $traccarCmdName, $forceCreation = true) {
+	function getTraccarCmd($traccarId, $traccarCmdName, $type, $forceCreation = true) {
 		$traccarCmd = traccarCmd::byEqLogicIdCmdName($traccarId, $traccarCmdName);
 		if (!is_object($traccarCmd) && $forceCreation) {
 			log::add('traccar', 'debug', 'Le nom de commande '.$traccarCmdName.' n\'existe pas pour l\'équipement '.$traccarId);
-			$traccarCmd = traccar::createTraccarCmd($traccarId, $traccarCmdName);
+			$traccarCmd = traccar::createTraccarCmd($traccarId, $traccarCmdName, $type);
 		}
 		return $traccarCmd;
 	}
 	
 	// Crée une commande TraccarCmd
-	function createTraccarCmd($traccarId, $traccarCmdName) {
+	function createTraccarCmd($traccarId, $traccarCmdName, $type) {
 		$traccarCmd = new traccarCmd();
 		$traccarCmd->setName($traccarCmdName);
 		$traccarCmd->setEqLogic_id($traccarId);
 		$traccarCmd->setEqType('traccar');
 		$traccarCmd->setType('info');
-		$traccarCmd->setSubType('binary');
+		$traccarCmd->setSubType($type);
 		$traccarCmd->save();
 		
 		return $traccarCmd;

@@ -31,7 +31,7 @@ if (!isConnect()) {
 <?php
 				echo '<textarea class="eqLogicAttr form-control" wrap="off" rows="6" style="width: 750px">';
 				echo htmlentities('<entry key=\'forward.enable\'>true</entry>
-<entry key=\'forward.url\'>'.network::getNetworkAccess('internal').'/plugins/traccar/core/api/jeeTraccar.php?apikey='.jeedom::getApiKey('traccar').'&amp;type=traccar&amp;id={uniqueId}&amp;latitude={latitude}&amp;longitude={longitude}</entry>
+<entry key=\'forward.url\'>'.network::getNetworkAccess('internal').'/plugins/traccar/core/api/jeeTraccar.php?apikey='.jeedom::getApiKey('traccar').'&amp;type=traccar&amp;id={uniqueId}&amp;latitude={latitude}&amp;longitude={longitude}&amp;attributes={attributes}</entry>
 
 <entry key=\'event.forward.enable\'>true</entry>
 <entry key=\'event.forward.url\'>'.network::getNetworkAccess('internal').'/plugins/traccar/core/api/jeeTraccar.php?apikey='.jeedom::getApiKey('traccar').'&amp;type=traccar&amp;action=event</entry>');
@@ -45,7 +45,7 @@ if (!isConnect()) {
 <?php
 				echo '<textarea class="eqLogicAttr form-control" wrap="off" rows="6" style="width: 750px">';
 				echo htmlentities('<entry key=\'forward.enable\'>true</entry>
-<entry key=\'forward.url\'>'.network::getNetworkAccess('external').'/plugins/traccar/core/api/jeeTraccar.php?apikey='.jeedom::getApiKey('traccar').'&amp;type=traccar&amp;id={uniqueId}&amp;latitude={latitude}&amp;longitude={longitude}</entry>
+<entry key=\'forward.url\'>'.network::getNetworkAccess('external').'/plugins/traccar/core/api/jeeTraccar.php?apikey='.jeedom::getApiKey('traccar').'&amp;type=traccar&amp;id={uniqueId}&amp;latitude={latitude}&amp;longitude={longitude}&amp;attributes={attributes}</entry>
 
 <entry key=\'event.forward.enable\'>true</entry>
 <entry key=\'event.forward.url\'>'.network::getNetworkAccess('external').'/plugins/traccar/core/api/jeeTraccar.php?apikey='.jeedom::getApiKey('traccar').'&amp;type=traccar&amp;action=event</entry>');
