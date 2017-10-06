@@ -17,3 +17,13 @@ Ajout de la possibilité de recevoir les événements Traccar 'deviceOnline' et 
 ==== Version 1.4 - 12/11/2016
 
 Ajout de la gestion des événements 'deviceMoving' et 'deviceStopped'. Si les notifications sont intempestives penser à augmenter le paramètre 'event.motion.speedThreshold' du service Traccar
+
+==== Version 1.5 - 06/10/2017
+
+Compatibilité Jeedom 3.1
+
+==== Version 1.6 - 07/10/2017
+
+Migration vers une clé d'API propre au plugin (l'ancienne méthode reste pour le moment fonctionnelle)
+Amélioration de l'écran de gestion du plugin avec accès direct à l'écran "Configuration"
+Ajout sur l'écran "Configuration" des configurations Traccar "default.xml" pour utilisation interne (serveur Traccar sur le même réseau que Jeedom) ou externe
