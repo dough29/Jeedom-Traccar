@@ -26,8 +26,12 @@ if (!isConnect()) {
 <form class="form-horizontal">
 	<fieldset>
 		<div class="form-group">
-			<label class="col-lg-4 control-label">Configuration Traccar 'default.xml' avec serveur Traccar sur le même réseau que Jeedom</label>
-			<div class="col-lg-2">
+			<label class="col-lg-4 control-label"></label>
+			<div class="col-lg-3"><b><a href="https://www.jeedom.com/forum/viewtopic.php?f=59&t=20329" target="_blank">Tuto installation Traccar sur le forum Jeedom</a></b></div>
+		</div>
+		<div class="form-group">
+			<label class="col-lg-4 control-label">Configuration Traccar 'traccar.xml' avec serveur Traccar sur le même réseau que Jeedom</label>
+			<div class="col-lg-3">
 <?php
 				echo '<textarea class="eqLogicAttr form-control" wrap="off" rows="6" style="width: 750px">';
 				echo htmlentities('<entry key=\'forward.enable\'>true</entry>
@@ -40,8 +44,8 @@ if (!isConnect()) {
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-lg-4 control-label">Configuration Traccar 'default.xml' avec serveur Traccar externe</label>
-			<div class="col-lg-2">
+			<label class="col-lg-4 control-label">Configuration Traccar 'traccar.xml' avec serveur Traccar externe</label>
+			<div class="col-lg-3">
 <?php
 				echo '<textarea class="eqLogicAttr form-control" wrap="off" rows="6" style="width: 750px">';
 				echo htmlentities('<entry key=\'forward.enable\'>true</entry>

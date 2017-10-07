@@ -26,7 +26,7 @@ Compatibilité Jeedom 3.1
 
 Migration vers une clé d'API propre au plugin (l'ancienne méthode reste pour le moment fonctionnelle)
 Amélioration de l'écran de gestion du plugin avec accès direct à l'écran "Configuration"
-Ajout sur l'écran "Configuration" des configurations Traccar "default.xml" pour utilisation interne (serveur Traccar sur le même réseau que Jeedom) ou externe
+Ajout sur l'écran "Configuration" des configurations Traccar "traccar.xml" pour utilisation interne (serveur Traccar sur le même réseau que Jeedom) ou externe
 
 ==== Version 1.7 - 07/10/2017
 
@@ -35,3 +35,4 @@ Prise en compte de l'état "deviceUnknown", état Traccar entre "online" et "off
 Récupération de l'information "batteryLevel" dans les données "attributes" de Traccar : nécessite l'ajout du paramètre à la configuration Traccar
 Récupération de l'information vitesse "speed"
 Possibilité de d'historiser les commandes
+Ajout sur l'écran de configuration d'un lien vers le tuto installation Traccar sur le forum Jeedom
