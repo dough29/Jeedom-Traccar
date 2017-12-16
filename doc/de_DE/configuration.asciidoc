@@ -1,4 +1,4 @@
-=== Configuration du plugin
+=== Plugin Konfiguration
 
 Les équipements Traccar se créent automatiquement dès lors que votre serveur Traccar est bien paramétré (voir chapitre suivant).
 

@@ -2,4 +2,4 @@
 
 Ce plugin permet d'interfacer un serveur Traccar avec le plugin Geoloc de Jeedom.
 
-Version Traccar 3.6 requise au minimum !
+Traccar benötigt mindestens Version 3.6 !
