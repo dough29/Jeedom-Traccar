@@ -27,7 +27,7 @@ Relancer ensuite le serveur Traccar pour prendre en compte les changements.
 
 === Configuration du serveur Traccar pour l'envoi des événements à Jedom
 
-Editer le fichier de configuration traccar.xml et ajouter les lignes :
+Bearbeiten Sie die Konfigurationsdatei traccar.xml und fügen Sie die folgenden Zeilen hinzu :
 
 	<entry key='event.forward.enable'>true</entry>
 	<entry key='event.forward.url'>http://<IP Jeedom>:<port Jeedom>/core/api/jeeApi.php?api=<clé API>&amp;type=traccar&amp;action=event</entry>
