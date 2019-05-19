@@ -1,5 +1,0 @@
-=== Traccar, interface entre vos trackers GPS et le plugin Geoloc
-
-Ce plugin permet d'interfacer un serveur Traccar avec le plugin Geoloc de Jeedom.
-
-Traccar benötigt mindestens Version 3.6 !

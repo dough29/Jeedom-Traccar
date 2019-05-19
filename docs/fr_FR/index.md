@@ -1,4 +1,4 @@
-=== Plugin Konfiguration
+## Configuration du plugin
 
 Les équipements Traccar se créent automatiquement dès lors que votre serveur Traccar est bien paramétré (voir chapitre suivant).
 
@@ -9,7 +9,7 @@ Les commandes Traccar permettant de défnir si un équipement est présent ou no
 	Test si le tracker 'AZERTY1234' est dans la zone 'Domicile' --> #[Aucun][Tracker AZERTY1234][Domicile]# == 1
 	Test si le tracker 'AZERTY1234' n'est pas dans la zone 'Domicile' --> #[Aucun][Tracker AZERTY1234][Domicile]# == 0
 
-=== Configuration du serveur Traccar pour l'envoi des positions à Jedom
+## Configuration du serveur Traccar pour l'envoi des positions à Jedom
 
 Du côté du serveur Traccar il faut éditer le fichier de configuration traccar.xml et ajouter les lignes :
 
@@ -25,9 +25,9 @@ Remplacer :
 
 Relancer ensuite le serveur Traccar pour prendre en compte les changements.
 
-=== Configuration du serveur Traccar pour l'envoi des événements à Jedom
+## Configuration du serveur Traccar pour l'envoi des événements à Jedom
 
-Bearbeiten Sie die Konfigurationsdatei traccar.xml und fügen Sie die folgenden Zeilen hinzu :
+Editer le fichier de configuration traccar.xml et ajouter les lignes :
 
 	<entry key='event.forward.enable'>true</entry>
 	<entry key='event.forward.url'>http://<IP Jeedom>:<port Jeedom>/core/api/jeeApi.php?api=<clé API>&amp;type=traccar&amp;action=event</entry>
