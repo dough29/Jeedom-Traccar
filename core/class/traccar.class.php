@@ -93,9 +93,15 @@ class traccar extends eqLogic {
 		// récupération des paramètres 'attributes'
 		$attributes = json_decode($jsonAttributes);
 		foreach($attributes as $attribute => $value) {
-			if ($attribute == 'batteryLevel') {
-				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'batteryLevel ', 'numeric');
-				$traccarCmd->event($value);
+			switch ($attribute) {
+				case 'batteryLevel':
+					$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'batteryLevel', 'numeric');
+					$traccarCmd->event($value);
+					break;
+				case 'ignition':
+					$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'ignition', 'binary');
+					$traccarCmd->event($value);
+					break;
 			}
 		}
 	}

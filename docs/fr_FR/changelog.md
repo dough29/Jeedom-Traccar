@@ -1,3 +1,8 @@
+## Version 1.8 - 19/05/2019
+
+Ajout de l'information batteryLevel
+Ajout de l'information ignition
+
 ## Version 1.7 - 08/10/2017
 
 Ajout de la compatibilité avec le plugin Localisation et Trajet (geotrav), la compatibilité avec le plugin Geoloc reste assurée
