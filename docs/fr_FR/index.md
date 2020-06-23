@@ -2,7 +2,7 @@
 
 Les équipements Traccar se créent automatiquement dès lors que votre serveur Traccar est bien paramétré (voir chapitre suivant).
 
-Une fois que votre tracker apparaît il faut l'éditer pour l'activer et lui associer un équipement Geoloc existant.
+Une fois que votre tracker apparaît il faut l'éditer pour l'activer et lui associer un équipement Localisation et Trajet ou Geoloc existant.
 
 Les commandes Traccar permettant de défnir si un équipement est présent ou non dans une zone (à définir via l'interface WEB de votre serveur Traccar) se créent de façon automatique. Les commandes sont de type binaire, voici quelques exemples pour vos scénarios :
 
@@ -14,7 +14,7 @@ Les commandes Traccar permettant de défnir si un équipement est présent ou no
 Du côté du serveur Traccar il faut éditer le fichier de configuration traccar.xml et ajouter les lignes :
 
 	<entry key='forward.enable'>true</entry>
-	<entry key='forward.url'>http://<IP Jeedom>:<port Jeedom>/core/api/jeeApi.php?api=<clé API>&amp;type=traccar&amp;id={uniqueId}&amp;latitude={latitude}&amp;longitude={longitude}</entry>
+	<entry key='forward.url'>http://<IP Jeedom>:<port Jeedom>/plugins/traccar/core/api/jeeTraccar.php?apikey=<clé API>&amp;type=traccar&amp;id={uniqueId}&amp;latitude={latitude}&amp;longitude={longitude}&amp;speed={speed}&amp;attributes={attributes}</entry>
 	
 Bien veiller à ce que les "&" soient représentés par leur code HTML "&amp;" !
 
@@ -30,7 +30,7 @@ Relancer ensuite le serveur Traccar pour prendre en compte les changements.
 Editer le fichier de configuration traccar.xml et ajouter les lignes :
 
 	<entry key='event.forward.enable'>true</entry>
-	<entry key='event.forward.url'>http://<IP Jeedom>:<port Jeedom>/core/api/jeeApi.php?api=<clé API>&amp;type=traccar&amp;action=event</entry>
+	<entry key='event.forward.url'>http://<IP Jeedom>:<port Jeedom>/plugins/traccar/core/api/jeeTraccar.php?apikey=<clé API>&amp;type=traccar&amp;action=event</entry>
 
 Bien veiller à ce que les "&" soient représentés par leur code HTML "&amp;" !
 
