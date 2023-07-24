@@ -1,3 +1,7 @@
+## Version 1.9 - 24/07/2023
+
+Ajout de l'information alarm
+
 ## Version 1.8 - 19/05/2019
 
 Ajout de l'information batteryLevel
