@@ -53,7 +53,7 @@ class traccar extends eqLogic {
 	}
 	
 	// Actions sur réception d'une position
-	function traccarPosition($traccar, $latitude, $longitude, $speed, $jsonAttributes) {
+	public static function traccarPosition($traccar, $latitude, $longitude, $speed, $jsonAttributes) {
 		// Récupèration de l'identifiant de l'équipement Geoloc associé
 		$geolocId = $traccar->getConfiguration('geoloc');
 		
@@ -107,7 +107,7 @@ class traccar extends eqLogic {
 	}
 	
 	// Actions sur réception d'un événement
-	function traccarEvent($traccar, $traccarEvent) {
+	public static function traccarEvent($traccar, $traccarEvent) {
 		switch ($traccarEvent->event->type) {
 			case 'geofenceEnter':
 				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), $traccarEvent->geofence->name, 'binary');
@@ -145,7 +145,7 @@ class traccar extends eqLogic {
 		}
 	}
 	
-	function getTraccarByUniqueId($uniqueId) {
+	public static function getTraccarByUniqueId($uniqueId) {
 		$traccar = traccar::byLogicalId($uniqueId, 'traccar');
 		
 		if (!is_object($traccar) && null != $uniqueId) {
@@ -178,7 +178,7 @@ class traccar extends eqLogic {
 	}
 	
 	// Récupère la commande TraccarCmd et demande sa création si elle n'existe pas
-	function getTraccarCmd($traccarId, $traccarCmdName, $type, $forceCreation = true) {
+	public static function getTraccarCmd($traccarId, $traccarCmdName, $type, $forceCreation = true) {
 		$traccarCmd = traccarCmd::byEqLogicIdCmdName($traccarId, $traccarCmdName);
 		if (!is_object($traccarCmd) && $forceCreation) {
 			log::add('traccar', 'debug', 'Le nom de commande '.$traccarCmdName.' n\'existe pas pour l\'équipement '.$traccarId);
@@ -188,7 +188,7 @@ class traccar extends eqLogic {
 	}
 	
 	// Crée une commande TraccarCmd
-	function createTraccarCmd($traccarId, $traccarCmdName, $type) {
+	public static function createTraccarCmd($traccarId, $traccarCmdName, $type) {
 		$traccarCmd = new traccarCmd();
 		$traccarCmd->setName($traccarCmdName);
 		$traccarCmd->setEqLogic_id($traccarId);
