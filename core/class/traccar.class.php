@@ -102,7 +102,17 @@ class traccar extends eqLogic {
 					$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'ignition', 'binary');
 					$traccarCmd->event($value);
 					break;
+				case 'alarm':
+					$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'alarm', 'string');
+					$traccarCmd->event($value);
+					break;
 			}
+		}
+
+		// Réinitialisation des attributs vides
+		$traccarCmdAlarm = traccar::getTraccarCmd($traccar->getId(), 'alarm', 'string', false);
+		if (is_object($traccarCmdAlarm) && !array_key_exists('alarm', $attributes)) {
+			$traccarCmdAlarm->event('');
 		}
 	}
 	
@@ -181,7 +191,7 @@ class traccar extends eqLogic {
 	public static function getTraccarCmd($traccarId, $traccarCmdName, $type, $forceCreation = true) {
 		$traccarCmd = traccarCmd::byEqLogicIdCmdName($traccarId, $traccarCmdName);
 		if (!is_object($traccarCmd) && $forceCreation) {
-			log::add('traccar', 'debug', 'Le nom de commande '.$traccarCmdName.' n\'existe pas pour l\'équipement '.$traccarId);
+			log::add('traccar', 'debug', 'Le nom de commande '.$traccarCmdName.' n\'existe pas pour l\'équipement '.$traccarId.' : création');
 			$traccarCmd = traccar::createTraccarCmd($traccarId, $traccarCmdName, $type);
 		}
 		return $traccarCmd;
