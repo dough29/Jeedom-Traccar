@@ -26,14 +26,14 @@ class traccar extends eqLogic {
 			$traccarEvent = json_decode(file_get_contents('php://input'));
 			
 			// Définition des variables
-			$traccarUniqueId = $traccarEvent->device->uniqueId;
-			$traccarEventType = $traccarEvent->event->type;
+			$traccarUniqueId = $traccarEvent['device']['uniqueId'];
+			$traccarEventType = $traccarEvent['event']['type'];
 			
 			// Récupération de l'équipement Traccar
 			$traccar = traccar::getTraccarByUniqueId($traccarUniqueId);
 			
 			log::add('traccar', 'info', 'Reception d\'un événement '.$traccarEventType.' - tracker '.$traccarUniqueId.' - '.$traccar->getName());
-			log::add('traccar', 'debug', 'Trame JSON : '.file_get_contents('php://input'));
+			log::add('traccar', 'debug', '  Trame JSON : '.file_get_contents('php://input'));
 			
 			// Appel de la fonction d'événement Traccar
 			traccar::traccarEvent($traccar, $traccarEvent);
@@ -44,16 +44,23 @@ class traccar extends eqLogic {
 			$traccar = traccar::getTraccarByUniqueId(init('id'));
 			
 			log::add('traccar', 'info', 'Reception d\'une position - tracker '.init('id').' - '.$traccar->getName());
-			log::add('traccar', 'debug', '> speed --> '.init('speed'));
-			log::add('traccar', 'debug', '> attributes --> '.init('attributes'));
+			log::add('traccar', 'debug', '  > speed --> '.init('speed'));
+			log::add('traccar', 'debug', '  > attributes --> '.init('attributes'));
 	
 			// Appel de la fonction de position Traccar
-			traccar::traccarPosition($traccar, init('latitude'), init('longitude'), init('speed'), init('attributes'));
+			traccar::traccarPosition($traccar, init('latitude'), init('longitude'), init('speed'), json_decode(init('attributes')));
 		}
 	}
 	
 	// Actions sur réception d'une position
-	public static function traccarPosition($traccar, $latitude, $longitude, $speed, $jsonAttributes) {
+	/**
+	 * @param traccar $traccar: l'object traccar associe a la position recu de l'application traccar
+	 * @param string $latitude: la latitude recue dans la notification
+	 * @param string $longitude: la longitude recue dans la notification
+	 * @param string $speed: la vitesse recue dans la notification
+	 * @param array $attributes: un tableau contenant des informations supplementaires
+	 */
+	public static function traccarPosition($traccar, $latitude, $longitude, $speed, $attributes) {
 		// Récupèration de l'identifiant de l'équipement Geoloc associé
 		$geolocId = $traccar->getConfiguration('geoloc');
 		
@@ -91,7 +98,6 @@ class traccar extends eqLogic {
 		$traccarCmd->event(round($speed));
 		
 		// récupération des paramètres 'attributes'
-		$attributes = json_decode($jsonAttributes);
 		foreach($attributes as $attribute => $value) {
 			switch ($attribute) {
 				case 'batteryLevel':
@@ -117,14 +123,18 @@ class traccar extends eqLogic {
 	}
 	
 	// Actions sur réception d'un événement
+	/**
+	 * @param traccar $traccar: l'object traccar associe a l'evenement recu de l'application traccar
+	 * @param array $traccarEvent: un tableau contenant les informations associes a l'evenement recu de l'application traccar
+	 */
 	public static function traccarEvent($traccar, $traccarEvent) {
-		switch ($traccarEvent->event->type) {
+		switch ($traccarEvent['event']['type']) {
 			case 'geofenceEnter':
-				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), $traccarEvent->geofence->name, 'binary');
+				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), $traccarEvent['geofence']['name'], 'binary');
 				$traccarCmd->event(true);
 				break;
 			case 'geofenceExit':
-				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), $traccarEvent->geofence->name, 'binary');
+				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), $traccarEvent['geofence']['name'], 'binary');
 				$traccarCmd->event(false);
 				break;
 			case 'deviceOnline':
@@ -151,10 +161,13 @@ class traccar extends eqLogic {
 				$traccarCmd->event(false);
 				break;
 			default:
-				log::add('traccar', 'info', 'L\'événement '.$traccarEvent->event->type.' n\'est pas implémenté');
+				log::add('traccar', 'info', 'L\'événement '.$traccarEvent['event']['type'].' n\'est pas implémenté');
 		}
 	}
 	
+	/**
+	 * @param int $uniqueId: un identifier associe a l'object dans l'application traccar
+	 */
 	public static function getTraccarByUniqueId($uniqueId) {
 		$traccar = traccar::byLogicalId($uniqueId, 'traccar');
 		
@@ -188,6 +201,12 @@ class traccar extends eqLogic {
 	}
 	
 	// Récupère la commande TraccarCmd et demande sa création si elle n'existe pas
+	/**
+	 * @param int $traccarId: identifiant unique de l'object traccar du plugin
+	 * @param string $traccarCmdName: nom de la commande a rechercher
+	 * @param string $type: type de la commande si non trouvee, et qu'on doit la creer
+	 * @param bool $forceCreation: indique si on doit creer la commande si elle n'existe pas.
+	 */
 	public static function getTraccarCmd($traccarId, $traccarCmdName, $type, $forceCreation = true) {
 		$traccarCmd = traccarCmd::byEqLogicIdCmdName($traccarId, $traccarCmdName);
 		if (!is_object($traccarCmd) && $forceCreation) {
@@ -198,6 +217,11 @@ class traccar extends eqLogic {
 	}
 	
 	// Crée une commande TraccarCmd
+	/**
+	 * @param int $traccarId: identifiant unique de l'object traccar du plugin
+	 * @param string $traccarCmdName: nom de la commande a rechercher
+	 * @param string $type: type de la commande si non trouvee, et qu'on doit la creer
+	 */	
 	public static function createTraccarCmd($traccarId, $traccarCmdName, $type) {
 		$traccarCmd = new traccarCmd();
 		$traccarCmd->setName($traccarCmdName);
@@ -209,6 +233,117 @@ class traccar extends eqLogic {
 		
 		return $traccarCmd;
 	}
+
+  	public static function postConfig_mqtt_topic($_value = null) {
+   		log::add('traccar', 'debug', 'Inscription au plugin mqtt2');
+    	if (!class_exists('mqtt2')) {
+    	  	return;
+    	}
+    	if (method_exists('mqtt2', 'removePluginTopicByPlugin')) {
+      		mqtt2::removePluginTopicByPlugin(__CLASS__);
+    	}
+		$root_topic = config::byKey('mqtt_topic', 'traccar', __CLASS__);
+		$root_topic = trim($root_topic, '/');
+   		mqtt2::addPluginTopic(__CLASS__, $root_topic);
+  	}  
+
+    /**
+     * @param string $_datas: les informations du message MQTT recu, au format json
+     */
+    public static function handleMqttMessage($_datas) {
+
+        try {
+            // If $_datas is already an array, do not decode it again.
+            $data = is_string($_datas)
+                ? json_decode($_datas, true, 512, JSON_THROW_ON_ERROR)
+                : $_datas;
+
+            log::add('traccar', 'debug', 'MQTT message recu: ' . json_encode($data));
+
+            $rootTopic = config::byKey('mqtt_topic', 'traccar', __CLASS__);
+   			$rootTopic = trim($rootTopic, '/');
+
+            // 1. On verifie qu'on est bien dans notre base topic.
+            if (!isset($data[$rootTopic]) || !is_array($data[$rootTopic])) {
+                log::add('traccar', 'debug', 'MQTT message recu, mais le root topic n\'est pas pour traccar');
+                return;
+            }    
+
+            // 2. On parcours les messages.
+            foreach ($data[$rootTopic] as $mqttMessageType => $mqttPayload) {
+
+				$logMsgData = json_encode($mqttPayload);
+                if (!is_array($mqttPayload)) {
+                    log::add('traccar', 'warning', 'Message MQTT invalide (' . $mqttMessageType . '(' . $logMsgData . ')');
+                    continue;
+                }
+				$traccarUniqueId = $mqttPayload['device']['uniqueId'];
+
+                // 3. On process les types de message ("events", et/ou "positions")
+                switch ($mqttMessageType) {
+                    case 'events':
+
+						if (!isset($mqttPayload['event']) or !isset($mqttPayload['event']['type'])) {
+		                    log::add('traccar', 'warning', 'Message MQTT invalide (il manque la section event ou le type) : ' . $mqttMessageType . '(' . $logMsgData . ')');
+           			        continue;
+						}
+						if (!isset($mqttPayload['device']) or !isset($mqttPayload['device']['uniqueId'])) {
+		                    log::add('traccar', 'warning', 'Message MQTT invalide (il manque la section device) : ' . $mqttMessageType . '(' . $logMsgData . ')');
+           			        continue;
+               			}
+						$traccarUniqueId = $mqttPayload['device']['uniqueId'];
+						$traccarEventType = $mqttPayload['event']['type'];
+
+						// recupere le traccar object du plugin
+						$traccar = traccar::getTraccarByUniqueId($traccarUniqueId);
+
+						log::add('traccar', 'info', 'Reception d\'un événement MQTT ' . $traccarEventType . ' - tracker ' . $traccarUniqueId . ' - ' . $traccar->getName());
+						log::add('traccar', 'debug', '  Trame JSON : ' . $logMsgData);						
+
+						// Appel de la fonction d'événement Traccar
+						traccar::traccarEvent($traccar, $mqttPayload);							
+        	            break;
+
+                    case 'positions':
+
+						if (!isset($mqttPayload['position'])) {
+		                    log::add('traccar', 'warning', 'Message MQTT invalide (il manque la section position) : ' . $mqttMessageType . '(' . $logMsgData . ')');
+           			        continue;
+						}
+						if (!isset($mqttPayload['device']) or !isset($mqttPayload['device']['uniqueId'])) {
+		                    log::add('traccar', 'warning', 'Message MQTT invalide (il manque la section device) : ' . $mqttMessageType . '(' . $logMsgData . ')');
+           			        continue;
+               			}
+						if (!isset($mqttPayload['position']['latitude']) or !isset($mqttPayload['position']['longitude']) or !isset($mqttPayload['position']['speed']) or !isset($mqttPayload['position']['attributes'])) {
+		                    log::add('traccar', 'warning', 'Message MQTT invalide (il manque la section attributes ou les champs latitude, longitude ou speed) : ' . $mqttMessageType . '(' . $logMsgData . ')');
+           			        continue;
+               			}
+						// Recupere le traccar
+						$traccarUniqueId = $mqttPayload['device']['uniqueId'];
+						$traccar = traccar::getTraccarByUniqueId($traccarUniqueId);
+
+						// Appel de la fonction d'événement Traccar
+						$latitude = $mqttPayload['position']['latitude'];
+						$longitude = $mqttPayload['position']['longitude'];
+						$speed = $mqttPayload['position']['speed'];
+						$attributes = $mqttPayload['position']['attributes'];
+
+						log::add('traccar', 'info', 'Reception d\'une position MQTT - tracker '. $traccarUniqueId . ' - ' . $traccar->getName());
+						log::add('traccar', 'debug', '  > speed --> ' . $speed);
+						log::add('traccar', 'debug', '  > attributes --> ' . json_encode($attributes));
+
+						traccar::traccarPosition($traccar, $latitude, $longitude, $speed, $attributes);		
+                        break;						
+
+                    default:
+                        log::add('traccar', 'warning', 'MQTT message type : ' . $mqttMessageType . ', non supporte dans traccar.');
+                        break;
+                }
+            }
+        } catch (JsonException $e) {
+            log::add('traccar', 'error', 'Invalid MQTT JSON: ' . $e->getMessage());
+        }         					
+	}	
 }
 
 class traccarCmd extends cmd {

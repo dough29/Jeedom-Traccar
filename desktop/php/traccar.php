@@ -6,52 +6,49 @@ $plugin = plugin::byId('traccar');
 sendVarToJS('eqType', $plugin->getId());
 $eqLogics = eqLogic::byType($plugin->getId());
 ?>
-<div class="row row-overflow">
-	<div class="col-lg-2 col-md-3 col-sm-4">
-		<div class="bs-sidebar">
-			<ul id="ul_eqLogic" class="nav nav-list bs-sidenav">
-				<a class="btn btn-default eqLogicAction" style="width : 100%;margin-top : 5px;margin-bottom: 5px;" data-action="add"><i class="fa fa-plus-circle"></i> {{Ajouter un équipement}}</a>
-				<li class="filter" style="margin-bottom: 5px;"><input class="filter form-control input-sm" placeholder="{{Rechercher}}" style="width: 100%"/></li>
-				<?php
-				foreach ($eqLogics as $eqLogic) {
-					$opacity = ($eqLogic->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
-					echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $eqLogic->getId() . '" style="' . $opacity . '"><a>' . $eqLogic->getHumanName(true) . '</a></li>';
-				}
-				?>
-			</ul>
-		</div>
-	</div>
-	
-	<div class="col-lg-10 col-md-9 col-sm-8 eqLogicThumbnailDisplay" style="border-left: solid 1px #EEE; padding-left: 25px;">
-		<legend><i class="fa fa-cog"></i>  {{Gestion}}</legend>
-		<div class="eqLogicThumbnailContainer">
-			<div class="cursor eqLogicAction" data-action="add" style="background-color : #ffffff; height : 200px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >
-				<center>
-					<i class="fa fa-plus-circle" style="font-size : 7em;color:#3F23A4;"></i>
-				</center>
-				<span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;"><center>Ajouter</center></span>
-			</div>
-			<div class="cursor eqLogicAction" data-action="gotoPluginConf" style="background-color : #ffffff; height : 120px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;">
-				<center>
-					<i class="fa fa-wrench" style="font-size : 6em;color:#767676;"></i>
-				</center>
-				<span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#767676"><center>{{Configuration}}</center></span>
-			</div>
-		</div>
 
-		<legend><i class="icon nature-planet5"></i> {{Mes trackers Traccar}}</legend>
+<div class="row row-overflow">
+	<div class="col-xs-12 eqLogicThumbnailDisplay">
+		<legend><i class="fas fa-cog"></i> {{Gestion}}</legend>
 		<div class="eqLogicThumbnailContainer">
-			<?php
-			foreach ($eqLogics as $eqLogic) {
-				$opacity = ($eqLogic->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
-				echo '			<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color : #ffffff; height : 200px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;' . $opacity . '" >';
-				echo "				<center>";
-				echo '					<img src="' . $plugin->getPathImgIcon() . '" height="105" width="95" />';
-				echo "				</center>";
-				echo '				<span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;"><center>' . $eqLogic->getHumanName(true, true) . '</center></span>';
-				echo '			</div>';
+			<div class="cursor eqLogicAction logoPrimary" data-action="add">
+				<i class="fas fa-plus-circle"></i>
+				<br>
+				<span>{{Ajouter}}</span>
+			</div>
+			<div class="cursor eqLogicAction logoSecondary" data-action="gotoPluginConf">
+				<i class="fas fa-wrench"></i>
+				<br>
+				<span>{{Configuration}}</span>
+			</div>
+		</div>
+		<legend><i class="fas fa-project-diagram"></i> {{Mes trackers Traccar}}</legend>
+		<?php
+			if (count($eqLogics) == 0) {
+				echo '<br><div class="text-center" style="font-size:1.2em;font-weight:bold;">{{Aucun équipement traccar trouvé, cliquez sur "Ajouter" pour commencer}}</div>';
+			} else {			
+				echo '<div class="input-group" style="margin:5px;">';
+				echo '<input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic">';
+				echo '<div class="input-group-btn">';
+				echo '<a id="bt_resetSearch" class="btn" style="width:30px"><i class="fas fa-times"></i></a>';
+				echo '<a class="btn roundedRight hidden" id="bt_pluginDisplayAsTable" data-coreSupport="1" data-state="0"><i class="fas fa-grip-lines"></i></a>';
+				echo '</div>';
+				echo '</div>';				
+				echo '<div class="eqLogicThumbnailContainer">';
+				foreach ($eqLogics as $eqLogic) {
+					$opacity = ($eqLogic->getIsEnable()) ? '' : 'disableCard';
+					echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqLogic->getId() . '">';
+					echo '<img src="' . $eqLogic->getImage() . '"/>';
+					echo '<br>';
+					echo '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
+					echo '<span class="hiddenAsCard displayTableRight hidden">';
+					echo ($eqLogic->getLogicalId() != '') ? '<span class="label label-info">' . $eqLogic->getLogicalId() . '</span>' : '';
+					echo ($eqLogic->getIsVisible() == 1) ? '<i class="fas fa-eye" title="{{Equipement visible}}"></i>' : '<i class="fas fa-eye-slash" title="{{Equipement non visible}}"></i>';
+					echo '</span>';
+					echo '</div>';					
+				}
 			}
-			?>
+		?>
 		</div>
 	</div>
 	<div class="col-lg-10 col-md-9 col-sm-8 eqLogic" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
@@ -137,21 +134,27 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					</fieldset>
 				</form>
 			</div>
+			<!-- Onglet des commandes de l'équipement -->
 			<div role="tabpanel" class="tab-pane" id="commandtab">
-				<br/>
-				<table id="table_cmd" class="table table-bordered table-condensed">
-					<thead>
-						<tr>
-							<th style="width: 50px;">#</th>
-							<th style="width: 200px;">{{Nom}}</th>
-							<th style="width: 200px;">{{Paramètres}}</th>
-							<th style="width: 100px;"></th>
-						</tr>
-					</thead>
-					<tbody>
-					</tbody>
-				</table>
-			</div>
+				<a class="btn btn-default btn-sm pull-right cmdAction" data-action="add" style="margin-top:5px;"><i class="fas fa-plus-circle"></i> {{Ajouter une commande}}</a>
+				<br><br>
+				<div class="table-responsive">
+					<table id="table_cmd" class="table table-bordered table-condensed">
+						<thead>
+							<tr>
+								<th class="hidden-xs" style="min-width:50px;width:70px;">ID</th>
+								<th style="min-width:200px;width:350px;">{{Nom}}</th>
+								<th>{{Type}}</th>
+								<th style="min-width:260px;">{{Options}}</th>
+								<th>{{Etat}}</th>
+								<th style="min-width:80px;width:200px;">{{Actions}}</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div><!-- /.tabpanel #commandtab-->			
 		</div>
 	</div>
 </div>
