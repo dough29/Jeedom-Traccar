@@ -1,3 +1,9 @@
+## Version 2.0 - 13/08/2026
+
+Ajout du support MQTT en plus du protocol proprietaire de traccar. Il faut avec le plugin MQTTManager installe pour utiliser le mode MQTT.
+Modification de l'interface du plugin pour reprendre les dernieres versions de template
+Modification du template de configuration pour le protocol proprietaire et pour MQTT avec l'ajout de "event.status.enable" a "true", sinon on en recoit plus les evenements dans les versions recentes de traccar.
+
 ## Version 1.8 - 19/05/2019
 
 Ajout de l'information batteryLevel
