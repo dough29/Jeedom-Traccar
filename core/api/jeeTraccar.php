@@ -23,36 +23,10 @@ if (!jeedom::apiAccess(init('apikey'), 'traccar')) {
 	die();
 }
 
-// Réception d'une action événement
-if (init('action') != null && init('action') === 'event') {
-	// Récupération du flux JSON
-	$traccarEvent = json_decode(file_get_contents('php://input'));
-	
-	// Définition des variables
-	$traccarUniqueId = $traccarEvent->device->uniqueId;
-	$traccarEventType = $traccarEvent->event->type;
-	
-	// Récupération de l'équipement Traccar
-	$traccar = traccar::getTraccarByUniqueId($traccarUniqueId);
-	
-	log::add('traccar', 'info', 'Reception d\'un événement '.$traccarEventType.' - tracker '.$traccarUniqueId.' - '.$traccar->getName());
-	log::add('traccar', 'debug', 'Trame JSON : '.file_get_contents('php://input'));
-	
-	// Appel de la fonction d'événement Traccar
-	traccar::traccarEvent($traccar, $traccarEvent);
+if ('mqtt' === config::byKey('notif_mode', 'traccar', 'legacy')) {
+	log::add('traccar', 'error', 'Reception d\'une notification http en mode MQTT. Vous devez configurer le plugin en mode "legacy"');
+} else {
+	traccar::event();
 }
-// Réception d'une position
-else {
-	// Récupération de l'équipement Traccar
-	$traccar = traccar::getTraccarByUniqueId(init('id'));
-	
-	log::add('traccar', 'info', 'Reception d\'une position - tracker '.init('id').' - '.$traccar->getName());
-	log::add('traccar', 'debug', '> speed --> '.init('speed'));
-	log::add('traccar', 'debug', '> attributes --> '.init('attributes'));
-	
-	// Appel de la fonction de position Traccar
-	traccar::traccarPosition($traccar, init('latitude'), init('longitude'), init('speed'), init('attributes'));
-}
-
 return true;
 ?>
