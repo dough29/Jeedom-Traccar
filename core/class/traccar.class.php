@@ -32,8 +32,8 @@ class traccar extends eqLogic {
 			// Récupération de l'équipement Traccar
 			$traccar = traccar::getTraccarByUniqueId($traccarUniqueId);
 			
-			log::add('traccar', 'info', 'Reception d\'un événement '.$traccarEventType.' - tracker '.$traccarUniqueId.' - '.$traccar->getName());
-			log::add('traccar', 'debug', '  Trame JSON : '.file_get_contents('php://input'));
+			log::add('traccar', 'info', 'Reception d\'un événement (legacy) ' . $traccarEventType . ' - tracker ' . $traccarUniqueId.' - ' . $traccar->getName());
+			log::add('traccar', 'debug', '  Trame JSON : ' . file_get_contents('php://input'));
 			
 			// Appel de la fonction d'événement Traccar
 			traccar::traccarEvent($traccar, $traccarEvent);
@@ -43,9 +43,9 @@ class traccar extends eqLogic {
 			// Récupération de l'équipement Traccar
 			$traccar = traccar::getTraccarByUniqueId(init('id'));
 			
-			log::add('traccar', 'info', 'Reception d\'une position - tracker '.init('id').' - '.$traccar->getName());
-			log::add('traccar', 'debug', '  > speed --> '.init('speed'));
-			log::add('traccar', 'debug', '  > attributes --> '.init('attributes'));
+			log::add('traccar', 'info', 'Reception d\'une position (legacy) - tracker ' . init('id') . ' - ' . $traccar->getName());
+			log::add('traccar', 'debug', '  > speed --> ' . init('speed'));
+			log::add('traccar', 'debug', '  > attributes --> ' . init('attributes'));
 	
 			// Appel de la fonction de position Traccar
 			traccar::traccarPosition($traccar, init('latitude'), init('longitude'), init('speed'), json_decode(init('attributes')));
@@ -84,12 +84,12 @@ class traccar extends eqLogic {
 			}
 			else {
 				// Envoi de l'événement à la l'objet geotrav
-				$geoloc->updateGeocodingReverse($latitude.",".$longitude);
+				$geoloc->updateGeocodingReverse($latitude . "," . $longitude);
 			}
 		}
 		else {
 			// Envoi de l'événement à la commande geoloc
-			$geoloc->event($latitude.",".$longitude);
+			$geoloc->event($latitude . "," . $longitude);
 			// Rafraichissement du widget
 			$geoloc->getEqLogic()->refreshWidget();
 		}
@@ -161,7 +161,7 @@ class traccar extends eqLogic {
 				$traccarCmd->event(false);
 				break;
 			default:
-				log::add('traccar', 'info', 'L\'événement '.$traccarEvent['event']['type'].' n\'est pas implémenté');
+				log::add('traccar', 'info', 'L\'événement '.$traccarEvent['event']['type'] . ' n\'est pas implémenté');
 		}
 	}
 	
@@ -172,18 +172,18 @@ class traccar extends eqLogic {
 		$traccar = traccar::byLogicalId($uniqueId, 'traccar');
 		
 		if (!is_object($traccar) && null != $uniqueId) {
-			log::add('traccar', 'error', 'Tracker inconnu - tracker '.$uniqueId.' -> création automatique');
+			log::add('traccar', 'error', 'Tracker inconnu - tracker ' . $uniqueId . ' -> création automatique');
 			
-			log::add('traccar', 'debug', 'Création de l\'équipement - tracker '.$uniqueId);
+			log::add('traccar', 'debug', 'Création de l\'équipement - tracker ' . $uniqueId);
 			$traccar = new eqLogic();
 			$traccar->setEqType_name('traccar');
 			$traccar->setIsEnable(0);
 			$traccar->setIsVisible(0);
-			$traccar->setLogicalId(init('id'));
-			$traccar->setName('Tracker '.$uniqueId);
+			$traccar->setLogicalId($uniqueId);
+			$traccar->setName('Tracker ' . $uniqueId);
 			$traccar->save();
 			
-			log::add('traccar', 'debug', 'Tracker Id = '.$uniqueId.' - '.$traccar->getName().' créé');
+			log::add('traccar', 'debug', 'Tracker Id = ' . $uniqueId . ' - ' . $traccar->getName() . ' créé');
 		}
 		
 		// Vérification de l'équipement de type Traccar
@@ -234,23 +234,30 @@ class traccar extends eqLogic {
 		return $traccarCmd;
 	}
 
-  	public static function postConfig_mqtt_topic($_value = null) {
-   		log::add('traccar', 'debug', 'Inscription au plugin mqtt2');
+ 	public static function postConfig_mqtt_topic($_value = null) {
     	if (!class_exists('mqtt2')) {
     	  	return;
     	}
     	if (method_exists('mqtt2', 'removePluginTopicByPlugin')) {
       		mqtt2::removePluginTopicByPlugin(__CLASS__);
     	}
-		$root_topic = config::byKey('mqtt_topic', 'traccar', __CLASS__);
-		$root_topic = trim($root_topic, '/');
-   		mqtt2::addPluginTopic(__CLASS__, $root_topic);
+		if ('mqtt' === config::byKey('notif_mode', 'traccar', 'legacy')) {
+   			log::add('traccar', 'debug', 'Inscription au plugin mqtt2');
+			$root_topic = config::byKey('mqtt_topic', 'traccar', __CLASS__);
+			$root_topic = trim($root_topic, '/');
+   			mqtt2::addPluginTopic(__CLASS__, $root_topic);
+		}
   	}  
 
     /**
      * @param string $_datas: les informations du message MQTT recu, au format json
      */
     public static function handleMqttMessage($_datas) {
+
+		if ('mqtt' !== config::byKey('notif_mode', 'traccar', 'legacy')) {
+			log::add('traccar', 'error', 'Reception d\'une notification http en mode MQTT. Vous devez configurer le plugin en mode "MQTT"');	
+			return;
+		}
 
         try {
             // If $_datas is already an array, do not decode it again.
@@ -328,7 +335,7 @@ class traccar extends eqLogic {
 						$speed = $mqttPayload['position']['speed'];
 						$attributes = $mqttPayload['position']['attributes'];
 
-						log::add('traccar', 'info', 'Reception d\'une position MQTT - tracker '. $traccarUniqueId . ' - ' . $traccar->getName());
+						log::add('traccar', 'info', 'Reception d\'une position MQTT - tracker ' . $traccarUniqueId . ' - ' . $traccar->getName());
 						log::add('traccar', 'debug', '  > speed --> ' . $speed);
 						log::add('traccar', 'debug', '  > attributes --> ' . json_encode($attributes));
 
