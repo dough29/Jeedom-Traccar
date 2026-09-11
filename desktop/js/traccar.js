@@ -26,11 +26,11 @@ $("#table_cmd").sortable({
 
 function addCmdToTable(_cmd) {
 	if (!isset(_cmd)) {
-        var _cmd = {configuration: {}};
+		var _cmd = {configuration: {}};
 	}
 	if (!isset(_cmd.configuration)) {
-    	_cmd.configuration = {}
-  	}	
+		_cmd.configuration = {}
+  }	
 
 	var tr = '<tr class="cmd" data-cmd_id="' + init(_cmd.id) + '">'
 	tr += '<td class="hidden-xs">'
@@ -76,19 +76,19 @@ function addCmdToTable(_cmd) {
 		id: $('.eqLogicAttr[data-l1key=id]').value(),
 		filter: { type: 'info' },
 		error: function (error) {
-		$('#div_alert').showAlert({ message: error.message, level: 'danger' })
+			$('#div_alert').showAlert({ message: error.message, level: 'danger' })
 		},
 		success: function (result) {
-		tr.find('.cmdAttr[data-l1key=value]').append(result)
-		tr.setValues(_cmd, '.cmdAttr')
-		jeedom.cmd.changeType(tr, init(_cmd.subType))
+			tr.find('.cmdAttr[data-l1key=value]').append(result)
+			tr.setValues(_cmd, '.cmdAttr')
+			jeedom.cmd.changeType(tr, init(_cmd.subType))
 		}
 	})
 }
 /*
 	var tr = '<tr class="cmd" data-cmd_id="' + init(_cmd.id) + '">';
 		tr += '<td><span class="cmdAttr" data-l1key="id"></span></td>';
-	    tr += '<td><span class="cmdAttr" data-l1key="name"></span></td>';
+		tr += '<td><span class="cmdAttr" data-l1key="name"></span></td>';
 		tr += '<td>';
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized" data-size="mini" checked/>{{Historiser}}</label></span>';
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" data-size="mini" checked/>{{Afficher}}</label></span>';
@@ -102,6 +102,6 @@ function addCmdToTable(_cmd) {
 		tr += '</td>';
 		tr += '</tr>';
 	$('#table_cmd tbody').append(tr);
-    $('#table_cmd tbody tr:last').setValues(_cmd, '.cmdAttr');
+	$('#table_cmd tbody tr:last').setValues(_cmd, '.cmdAttr');
 */
 
