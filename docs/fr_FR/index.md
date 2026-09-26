@@ -35,8 +35,8 @@ Remplacez :
 
 Relancez ensuite le serveur Traccar pour prendre en compte les changements :
 
-  systemctl stop traccar
-  systemctl start traccar
+    systemctl stop traccar
+    systemctl start traccar
 
 ## Configuration du serveur Traccar pour l'envoi des événements à Jeedom
 
