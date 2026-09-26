@@ -255,7 +255,7 @@ class traccar extends eqLogic {
 	public static function handleMqttMessage($_datas) {
 
 		if ('mqtt' !== config::byKey('notif_mode', 'traccar', 'legacy')) {
-			log::add('traccar', 'error', 'Réception d\'une notification http en mode MQTT. Vous devez configurer le plugin en mode "MQTT"'); 
+			log::add('traccar', 'error', 'Réception d\'une notification http en mode MQTT. Vous devez configurer le plugin en mode "MQTT"');
 			return;
 		}
 
