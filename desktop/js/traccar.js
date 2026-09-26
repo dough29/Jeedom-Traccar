@@ -30,7 +30,7 @@ function addCmdToTable(_cmd) {
 	}
 	if (!isset(_cmd.configuration)) {
 		_cmd.configuration = {}
-  }	
+	}
 
 	var tr = '<tr class="cmd" data-cmd_id="' + init(_cmd.id) + '">'
 	tr += '<td class="hidden-xs">'
