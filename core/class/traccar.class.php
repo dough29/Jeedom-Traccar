@@ -247,7 +247,7 @@ class traccar extends eqLogic {
 			$root_topic = trim($root_topic, '/');
 			mqtt2::addPluginTopic(__CLASS__, $root_topic);
 		}
-	}  
+	}
 
 	/**
 	 * @param string $_datas: les informations du message MQTT reçu, au format json
