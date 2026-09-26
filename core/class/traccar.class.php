@@ -274,7 +274,7 @@ class traccar extends eqLogic {
 			if (!isset($data[$rootTopic]) || !is_array($data[$rootTopic])) {
 				log::add('traccar', 'debug', 'MQTT message reçu, mais le root topic n\'est pas pour traccar');
 				return;
-			}	
+			}
 
 			// 2. On parcours les messages.
 			foreach ($data[$rootTopic] as $mqttMessageType => $mqttPayload) {
