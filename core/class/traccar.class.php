@@ -221,7 +221,7 @@ class traccar extends eqLogic {
 	 * @param int $traccarId: identifiant unique de l'objet traccar du plugin
 	 * @param string $traccarCmdName: nom de la commande à rechercher
 	 * @param string $type: type de la commande si non trouvée, et qu'on doit la créer
-	 */ 
+	 */
 	public static function createTraccarCmd($traccarId, $traccarCmdName, $type) {
 		$traccarCmd = new traccarCmd();
 		$traccarCmd->setName($traccarCmdName);
