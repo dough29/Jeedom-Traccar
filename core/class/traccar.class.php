@@ -339,8 +339,8 @@ class traccar extends eqLogic {
 						log::add('traccar', 'debug', '  > speed --> ' . $speed);
 						log::add('traccar', 'debug', '  > attributes --> ' . json_encode($attributes));
 
-						traccar::traccarPosition($traccar, $latitude, $longitude, $speed, $attributes);	   
-						break;					  
+						traccar::traccarPosition($traccar, $latitude, $longitude, $speed, $attributes);
+						break;
 
 					default:
 						log::add('traccar', 'warning', 'MQTT message type : ' . $mqttMessageType . ', non supporté dans traccar.');
