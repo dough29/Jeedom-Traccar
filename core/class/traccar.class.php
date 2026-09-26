@@ -24,17 +24,17 @@ class traccar extends eqLogic {
 		if (init('action') === 'event') {
 			// Récupération du flux JSON
 			$traccarEvent = json_decode(file_get_contents('php://input'));
-			
+
 			// Définition des variables
 			$traccarUniqueId = $traccarEvent['device']['uniqueId'];
 			$traccarEventType = $traccarEvent['event']['type'];
-			
+
 			// Récupération de l'équipement Traccar
 			$traccar = traccar::getTraccarByUniqueId($traccarUniqueId);
-			
+
 			log::add('traccar', 'info', 'Réception d\'un événement (legacy) ' . $traccarEventType . ' - tracker ' . $traccarUniqueId.' - ' . $traccar->getName());
 			log::add('traccar', 'debug', '  Trame JSON : ' . file_get_contents('php://input'));
-			
+
 			// Appel de la fonction d'événement Traccar
 			traccar::traccarEvent($traccar, $traccarEvent);
 		}
@@ -42,16 +42,16 @@ class traccar extends eqLogic {
 		else {
 			// Récupération de l'équipement Traccar
 			$traccar = traccar::getTraccarByUniqueId(init('id'));
-			
+
 			log::add('traccar', 'info', 'Réception d\'une position (legacy) - tracker ' . init('id') . ' - ' . $traccar->getName());
 			log::add('traccar', 'debug', '  > speed --> ' . init('speed'));
 			log::add('traccar', 'debug', '  > attributes --> ' . init('attributes'));
-	
+
 			// Appel de la fonction de position Traccar
 			traccar::traccarPosition($traccar, init('latitude'), init('longitude'), init('speed'), json_decode(init('attributes')));
 		}
 	}
-	
+
 	// Actions sur réception d'une position
 	/**
 	 * @param traccar $traccar: l'objet traccar associé à la position reçue de l'application traccar
@@ -63,20 +63,20 @@ class traccar extends eqLogic {
 	public static function traccarPosition($traccar, $latitude, $longitude, $speed, $attributes) {
 		// Récupération de l'identifiant de l'équipement Geoloc associé
 		$geolocId = $traccar->getConfiguration('geoloc');
-		
+
 		// Vérification de l'identifiant de l'équipement Geoloc associé
 		if (null == $geolocId) {
 			log::add('traccar', 'error', 'Cet équipement n\'est pas lié à un objet Geoloc - tracker '.$traccar->getLogicalId().' - '.$traccar->getName());
 			throw new Exception(__('Traccar - cet équipement n\'est pas lié à un objet Geoloc : ', __FILE__) . $traccar->getLogicalId().' - '.$traccar->getName());
 		}
-		
+
 		// Récupération de la commande Geoloc
 		$geoloc = geolocCmd::byId($geolocId);
-		
+
 		// Si on n'a pas récupéré de commande Geoloc
 		if (!is_object($geoloc)) {
 			log::add('traccar', 'debug', 'Impossible de récupérer l\'objet geolocCmd, tentative de récupération de l\'objet geotrav');
-			
+
 			// Récupération de l'objet geotrav
 			$geoloc = geotrav::byId($geolocId);
 			if (!is_object($geoloc)) {
@@ -93,10 +93,10 @@ class traccar extends eqLogic {
 			// Rafraichissement du widget
 			$geoloc->getEqLogic()->refreshWidget();
 		}
-		
+
 		$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Vitesse ', 'numeric');
 		$traccarCmd->event(round($speed));
-		
+
 		// Récupération des paramètres 'attributes'
 		foreach($attributes as $attribute => $value) {
 			switch ($attribute) {
@@ -121,7 +121,7 @@ class traccar extends eqLogic {
 			$traccarCmdAlarm->event('');
 		}
 	}
-	
+
 	// Actions sur réception d'un événement
 	/**
 	 * @param traccar $traccar: l'objet traccar associé à l'evenement reçu de l'application traccar
@@ -145,7 +145,7 @@ class traccar extends eqLogic {
 			case 'deviceUnknown':
 				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Online', 'binary');
 				$traccarCmd->event(false);
-				
+
 				// Le tracker offline n'est plus en mouvement
 				$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Moving', 'binary', false);
 				if (is_object($traccarCmd)) {
@@ -164,16 +164,16 @@ class traccar extends eqLogic {
 				log::add('traccar', 'info', 'L\'événement '.$traccarEvent['event']['type'] . ' n\'est pas implémenté');
 		}
 	}
-	
+
 	/**
 	 * @param int $uniqueId: un identifier associé à l'objet dans l'application traccar
 	 */
 	public static function getTraccarByUniqueId($uniqueId) {
 		$traccar = traccar::byLogicalId($uniqueId, 'traccar');
-		
+
 		if (!is_object($traccar) && null != $uniqueId) {
 			log::add('traccar', 'error', 'Tracker inconnu - tracker ' . $uniqueId . ' -> création automatique');
-			
+
 			log::add('traccar', 'debug', 'Création de l\'équipement - tracker ' . $uniqueId);
 			$traccar = new eqLogic();
 			$traccar->setEqType_name('traccar');
@@ -182,10 +182,10 @@ class traccar extends eqLogic {
 			$traccar->setLogicalId($uniqueId);
 			$traccar->setName('Tracker ' . $uniqueId);
 			$traccar->save();
-			
+
 			log::add('traccar', 'debug', 'Tracker Id = ' . $uniqueId . ' - ' . $traccar->getName() . ' créé');
 		}
-		
+
 		// Vérification de l'équipement de type Traccar
 		if ($traccar->getEqType_name() != 'traccar') {
 			log::add('traccar', 'error', 'Cet équipement n\'est pas de type traccar - tracker '.$uniqueId.' - '.$traccar->getName());
@@ -196,10 +196,10 @@ class traccar extends eqLogic {
 			log::add('traccar', 'error', 'Cet équipement n\'est pas activé - tracker '.$uniqueId.' - '.$traccar->getName());
 			throw new Exception(__('Traccar - cet équipement n\'est pas activé : ', __FILE__) . $uniqueId.' - '.$traccar->getName());
 		}
-		
+
 		return $traccar;
 	}
-	
+
 	// Récupère la commande TraccarCmd et demande sa création si elle n'existe pas
 	/**
 	 * @param int $traccarId: identifiant unique de l'objet traccar du plugin
@@ -215,7 +215,7 @@ class traccar extends eqLogic {
 		}
 		return $traccarCmd;
 	}
-	
+
 	// Crée une commande TraccarCmd
 	/**
 	 * @param int $traccarId: identifiant unique de l'objet traccar du plugin
@@ -230,7 +230,7 @@ class traccar extends eqLogic {
 		$traccarCmd->setType('info');
 		$traccarCmd->setSubType($type);
 		$traccarCmd->save();
-		
+
 		return $traccarCmd;
 	}
 
@@ -300,17 +300,16 @@ class traccar extends eqLogic {
 						}
 						$traccarUniqueId = $mqttPayload['device']['uniqueId'];
 						$traccarEventType = $mqttPayload['event']['type'];
-	
+
 						// Récupère l'objet traccar du plugin
 						$traccar = traccar::getTraccarByUniqueId($traccarUniqueId);
-	
 						log::add('traccar', 'info', 'Réception d\'un événement MQTT ' . $traccarEventType . ' - tracker ' . $traccarUniqueId . ' - ' . $traccar->getName());
-						log::add('traccar', 'debug', '  Trame JSON : ' . $logMsgData);					   
-	
+						log::add('traccar', 'debug', '  Trame JSON : ' . $logMsgData);
+
 						// Appel de la fonction d'événement Traccar
-						traccar::traccarEvent($traccar, $mqttPayload);						  
+						traccar::traccarEvent($traccar, $mqttPayload);
 						break;
-	
+
 					case 'positions':
 
 						if (!isset($mqttPayload['position'])) {
@@ -349,10 +348,9 @@ class traccar extends eqLogic {
 			}
 		} catch (JsonException $e) {
 			log::add('traccar', 'error', 'Invalid MQTT JSON: ' . $e->getMessage());
-		}						   
-	}   
+		}
+	}
 }
 
 class traccarCmd extends cmd {
 }
-?>
