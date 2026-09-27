@@ -294,11 +294,11 @@ class traccar extends eqLogic {
 
 						if (!isset($mqttPayload['event']) or !isset($mqttPayload['event']['type'])) {
 							log::add('traccar', 'warning', 'Message MQTT invalide (il manque la section event ou le type) : ' . $mqttMessageType . '(' . $logMsgData . ')');
-							continue;
+							continue 2;
 						}
 						if (!isset($mqttPayload['device']) or !isset($mqttPayload['device']['uniqueId'])) {
 							log::add('traccar', 'warning', 'Message MQTT invalide (il manque la section device) : ' . $mqttMessageType . '(' . $logMsgData . ')');
-							continue;
+							continue 2;
 						}
 						$traccarUniqueId = $mqttPayload['device']['uniqueId'];
 						$traccarEventType = $mqttPayload['event']['type'];
@@ -316,15 +316,15 @@ class traccar extends eqLogic {
 
 						if (!isset($mqttPayload['position'])) {
 							log::add('traccar', 'warning', 'Message MQTT invalide (il manque la section position) : ' . $mqttMessageType . '(' . $logMsgData . ')');
-							continue;
+							continue 2;
 						}
 						if (!isset($mqttPayload['device']) or !isset($mqttPayload['device']['uniqueId'])) {
 							log::add('traccar', 'warning', 'Message MQTT invalide (il manque la section device) : ' . $mqttMessageType . '(' . $logMsgData . ')');
-							continue;
+							continue 2;
 						}
 						if (!isset($mqttPayload['position']['latitude']) or !isset($mqttPayload['position']['longitude']) or !isset($mqttPayload['position']['speed']) or !isset($mqttPayload['position']['attributes'])) {
 							log::add('traccar', 'warning', 'Message MQTT invalide (il manque la section attributes ou les champs latitude, longitude ou speed) : ' . $mqttMessageType . '(' . $logMsgData . ')');
-							continue;
+							continue 2;
 						}
 						// Récupère le traccar
 						$traccarUniqueId = $mqttPayload['device']['uniqueId'];
