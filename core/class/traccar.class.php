@@ -94,6 +94,9 @@ class traccar extends eqLogic {
 			$geoloc->getEqLogic()->refreshWidget();
 		}
 
+		// NB : le nom de commande 'Vitesse ' comporte volontairement un espace final (historique).
+		// Ne pas le retirer sans migration : la commande est recherchée par ce nom exact, un
+		// renommage créerait un doublon 'Vitesse' et orphelinerait l'historique des installations existantes.
 		$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Vitesse ', 'numeric');
 		// Cast explicite : init('speed') renvoie '' si absent, et round('') est une TypeError en PHP 8
 		$traccarCmd->event(round((float) $speed));
