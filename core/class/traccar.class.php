@@ -22,8 +22,8 @@ class traccar extends eqLogic {
 	public static function event() {
 		// Réception d'une action événement
 		if (init('action') === 'event') {
-			// Récupération du flux JSON
-			$traccarEvent = json_decode(file_get_contents('php://input'));
+			// Récupération du flux JSON (en tableau associatif : traccarEvent() accède aux données en mode tableau)
+			$traccarEvent = json_decode(file_get_contents('php://input'), true);
 
 			// Définition des variables
 			$traccarUniqueId = $traccarEvent['device']['uniqueId'];
