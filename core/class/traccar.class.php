@@ -97,8 +97,8 @@ class traccar extends eqLogic {
 		$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Vitesse ', 'numeric');
 		$traccarCmd->event(round($speed));
 
-		// Récupération des paramètres 'attributes'
-		foreach($attributes as $attribute => $value) {
+		// Récupération des paramètres 'attributes' (cast en tableau : évite un warning si null/objet vide)
+		foreach((array) $attributes as $attribute => $value) {
 			switch ($attribute) {
 				case 'batteryLevel':
 					$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'batteryLevel', 'numeric');
@@ -117,7 +117,8 @@ class traccar extends eqLogic {
 
 		// Réinitialisation des attributs vides
 		$traccarCmdAlarm = traccar::getTraccarCmd($traccar->getId(), 'alarm', 'string', false);
-		if (is_object($traccarCmdAlarm) && !array_key_exists('alarm', $attributes)) {
+		$attributesArray = (array) $attributes;
+		if (is_object($traccarCmdAlarm) && !isset($attributesArray['alarm'])) {
 			$traccarCmdAlarm->event('');
 		}
 	}
