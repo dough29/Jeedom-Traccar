@@ -95,7 +95,8 @@ class traccar extends eqLogic {
 		}
 
 		$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Vitesse ', 'numeric');
-		$traccarCmd->event(round($speed));
+		// Cast explicite : init('speed') renvoie '' si absent, et round('') est une TypeError en PHP 8
+		$traccarCmd->event(round((float) $speed));
 
 		// Récupération des paramètres 'attributes' (cast en tableau : évite un warning si null/objet vide)
 		foreach((array) $attributes as $attribute => $value) {
