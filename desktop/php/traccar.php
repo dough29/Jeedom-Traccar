@@ -53,13 +53,13 @@ $eqLogics = eqLogic::byType($plugin->getId());
 	</div>
 	<div class="col-lg-10 col-md-9 col-sm-8 eqLogic" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
 		<a class="btn btn-success eqLogicAction pull-right" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}</a>
-    	<a class="btn btn-danger eqLogicAction pull-right" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
-    	<a class="btn btn-default eqLogicAction pull-right" data-action="configure"><i class="fa fa-cogs"></i> {{Configuration avancée}}</a>
-    	<ul class="nav nav-tabs" role="tablist">
-      		<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a></li>
-      		<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="home" role="tab" data-toggle="tab"><i class="fa fa-tachometer"></i> {{Equipement}}</a></li>
-      		<li role="presentation"><a href="#commandtab" aria-controls="profile" role="tab" data-toggle="tab"><i class="fa fa-list-alt"></i> {{Commandes}}</a></li>
-    	</ul>
+		<a class="btn btn-danger eqLogicAction pull-right" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
+		<a class="btn btn-default eqLogicAction pull-right" data-action="configure"><i class="fa fa-cogs"></i> {{Configuration avancée}}</a>
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a></li>
+			<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="home" role="tab" data-toggle="tab"><i class="fa fa-tachometer"></i> {{Equipement}}</a></li>
+			<li role="presentation"><a href="#commandtab" aria-controls="profile" role="tab" data-toggle="tab"><i class="fa fa-list-alt"></i> {{Commandes}}</a></li>
+		</ul>
 		<div class="tab-content" style="height:calc(100% - 50px);overflow:auto;overflow-x: hidden;">
 			<div role="tabpanel" class="tab-pane active" id="eqlogictab">
 				<br/>
@@ -86,12 +86,12 @@ $eqLogics = eqLogic::byType($plugin->getId());
 							</div>
 						</div>
 						<div class="form-group">
-              				<label class="col-sm-2 control-label"></label>
-              				<div class="col-sm-9">
-                				<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isEnable" checked/>{{Activer}}</label>
-                				<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked/>{{Visible}}</label>
-              				</div>
-            			</div>
+							<label class="col-sm-2 control-label"></label>
+							<div class="col-sm-9">
+								<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isEnable" checked/>{{Activer}}</label>
+								<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked/>{{Visible}}</label>
+							</div>
+						</div>
 						<div class="form-group">
 							<label class="col-sm-2 control-label">{{Identifiant du tracker}}</label>
 							<div class="col-sm-2">
@@ -105,14 +105,14 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									<option value="">{{Aucun}}</option>
 										<?php
 										if (!class_exists('geolocCmd') && !class_exists('geotravCmd')) {
-											echo '<option value="none">Plugin Geoloc et Localisation et Trajet (geotrav) absent</option>';
+											echo '<option value="none">Plugins Geoloc et Localisation et Trajet (geotrav) absents</option>';
 										}
 										if (class_exists('geolocCmd')) {
 											echo '<optgroup label="Geoloc">';
 											foreach (eqLogic::byType('geoloc') as $geoloc) {
 												foreach (geolocCmd::byEqLogicId($geoloc->getId()) as $geoinfo) {
 													if ($geoinfo->getConfiguration('mode') == 'dynamic') {
-														echo '									<option value="' . $geoinfo->getId() . '">' . $geoloc->getName() . ' > ' . $geoinfo->getName() . '</option>';
+														echo '<option value="' . $geoinfo->getId() . '">' . $geoloc->getName() . ' > ' . $geoinfo->getName() . '</option>';
 													}
 												}
 											}
@@ -122,7 +122,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 											echo '<optgroup label="Localisation et Trajet (geotrav)">';
 											foreach (eqLogic::byType('geotrav') as $geotrav) {
 												if ($geotrav->getConfiguration('type') == 'location') {
-													echo '									<option value="' . $geotrav->getId() . '">' . $geotrav->getName() . '</option>';
+													echo '<option value="' . $geotrav->getId() . '">' . $geotrav->getName() . '</option>';
 												}
 											}
 											echo '</optgroup>';

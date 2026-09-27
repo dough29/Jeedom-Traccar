@@ -24,7 +24,7 @@ if (!jeedom::apiAccess(init('apikey'), 'traccar')) {
 }
 
 if ('mqtt' === config::byKey('notif_mode', 'traccar', 'legacy')) {
-	log::add('traccar', 'error', 'Reception d\'une notification http en mode MQTT. Vous devez configurer le plugin en mode "legacy"');
+	log::add('traccar', 'error', 'Réception d\'une notification http en mode MQTT. Vous devez configurer le plugin en mode "legacy"');
 } else {
 	traccar::event();
 }

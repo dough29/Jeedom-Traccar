@@ -54,10 +54,6 @@ if (!isConnect()) {
 	<fieldset>
 		<div class="form-group notificationMode legacy">
 			<div class="form-group">
-				<label class="col-lg-4 control-label"></label>
-				<div class="col-lg-3"><b><a href="https://www.jeedom.com/forum/viewtopic.php?f=59&t=20329" target="_blank">Tuto installation Traccar sur le forum Jeedom</a></b></div>
-				</div>
-			<div class="form-group">
 				<label class="col-lg-4 control-label">Configuration Traccar 'traccar.xml' avec serveur Traccar sur le même réseau que Jeedom</label>
 				<div class="col-lg-3">
 <?php
@@ -96,10 +92,6 @@ if (!isConnect()) {
 				echo '<div class="alert alert-warning">{{Le plugin MQTTManager n\'est pas installé, veuillez l\'installer avant de configurer le plugin traccar en MQTT.}}</div>';
 			}
 			?>
-			<div class="form-group">
-				<label class="col-lg-4 control-label"></label>
-				<div class="col-lg-3"><b><a href="https://www.jeedom.com/forum/viewtopic.php?f=59&t=20329" target="_blank">Tuto installation Traccar sur le forum Jeedom</a></b></div>
-				</div>
 			<div class="form-group">
 			<label class="col-lg-4 control-label">Configuration Traccar 'traccar.xml' avec serveur MQTT</label>
 			<div class="col-lg-3">
