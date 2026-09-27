@@ -104,8 +104,8 @@ Assurez-vous d'avoir configuré le plugin en mode MQTT. La solution la plus simp
     <entry key='event.status.enable'>true</entry>
     <entry key='event.forward.enable'>true</entry>
     <entry key='event.forward.type'>mqtt</entry>
-    <entry key='forward.url'>mqtt://<user>:<password>@<ip broker mqtt>:<port broker mqtt></entry>
-    <entry key='forward.topic'><root topic>/positions</entry>
+    <entry key='event.forward.url'>mqtt://<user>:<password>@<ip broker mqtt>:<port broker mqtt></entry>
+    <entry key='event.forward.topic'><root topic>/events</entry>
 
 Remplacez :
 
