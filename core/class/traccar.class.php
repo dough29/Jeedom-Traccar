@@ -286,9 +286,9 @@ class traccar extends eqLogic {
 					log::add('traccar', 'warning', 'Message MQTT invalide (' . $mqttMessageType . '(' . $logMsgData . ')');
 					continue;
 				}
-				$traccarUniqueId = $mqttPayload['device']['uniqueId'];
 
 				// 3. On process les types de message ("events", et/ou "positions")
+				//    (uniqueId lu dans chaque case, après validation de la section device)
 				switch ($mqttMessageType) {
 					case 'events':
 
