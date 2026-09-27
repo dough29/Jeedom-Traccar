@@ -126,7 +126,7 @@ if (!isConnect()) {
 				?>
 			</div>
 		</div>
-	</fielset>
+	</fieldset>
 </form>
 
 <script>

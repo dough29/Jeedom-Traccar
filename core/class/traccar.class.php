@@ -22,8 +22,8 @@ class traccar extends eqLogic {
 	public static function event() {
 		// Réception d'une action événement
 		if (init('action') === 'event') {
-			// Récupération du flux JSON
-			$traccarEvent = json_decode(file_get_contents('php://input'));
+			// Récupération du flux JSON (en tableau associatif : traccarEvent() accède aux données en mode tableau)
+			$traccarEvent = json_decode(file_get_contents('php://input'), true);
 
 			// Définition des variables
 			$traccarUniqueId = $traccarEvent['device']['uniqueId'];
@@ -94,11 +94,15 @@ class traccar extends eqLogic {
 			$geoloc->getEqLogic()->refreshWidget();
 		}
 
+		// NB : le nom de commande 'Vitesse ' comporte volontairement un espace final (historique).
+		// Ne pas le retirer sans migration : la commande est recherchée par ce nom exact, un
+		// renommage créerait un doublon 'Vitesse' et orphelinerait l'historique des installations existantes.
 		$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'Vitesse ', 'numeric');
-		$traccarCmd->event(round($speed));
+		// Cast explicite : init('speed') renvoie '' si absent, et round('') est une TypeError en PHP 8
+		$traccarCmd->event(round((float) $speed));
 
-		// Récupération des paramètres 'attributes'
-		foreach($attributes as $attribute => $value) {
+		// Récupération des paramètres 'attributes' (cast en tableau : évite un warning si null/objet vide)
+		foreach((array) $attributes as $attribute => $value) {
 			switch ($attribute) {
 				case 'batteryLevel':
 					$traccarCmd = traccar::getTraccarCmd($traccar->getId(), 'batteryLevel', 'numeric');
@@ -117,7 +121,8 @@ class traccar extends eqLogic {
 
 		// Réinitialisation des attributs vides
 		$traccarCmdAlarm = traccar::getTraccarCmd($traccar->getId(), 'alarm', 'string', false);
-		if (is_object($traccarCmdAlarm) && !array_key_exists('alarm', $attributes)) {
+		$attributesArray = (array) $attributes;
+		if (is_object($traccarCmdAlarm) && !isset($attributesArray['alarm'])) {
 			$traccarCmdAlarm->event('');
 		}
 	}
@@ -169,9 +174,16 @@ class traccar extends eqLogic {
 	 * @param int $uniqueId: un identifier associé à l'objet dans l'application traccar
 	 */
 	public static function getTraccarByUniqueId($uniqueId) {
+		// Garde : un uniqueId vide ne peut pas identifier un tracker (byLogicalId renverrait
+		// un non-objet, et les accès aux getters plus bas provoqueraient une erreur fatale).
+		if (empty($uniqueId)) {
+			log::add('traccar', 'error', 'Identifiant de tracker vide reçu, requête ignorée');
+			throw new Exception(__('Traccar - identifiant de tracker vide', __FILE__));
+		}
+
 		$traccar = traccar::byLogicalId($uniqueId, 'traccar');
 
-		if (!is_object($traccar) && null != $uniqueId) {
+		if (!is_object($traccar)) {
 			log::add('traccar', 'error', 'Tracker inconnu - tracker ' . $uniqueId . ' -> création automatique');
 
 			log::add('traccar', 'debug', 'Création de l\'équipement - tracker ' . $uniqueId);
@@ -284,19 +296,19 @@ class traccar extends eqLogic {
 					log::add('traccar', 'warning', 'Message MQTT invalide (' . $mqttMessageType . '(' . $logMsgData . ')');
 					continue;
 				}
-				$traccarUniqueId = $mqttPayload['device']['uniqueId'];
 
 				// 3. On process les types de message ("events", et/ou "positions")
+				//    (uniqueId lu dans chaque case, après validation de la section device)
 				switch ($mqttMessageType) {
 					case 'events':
 
 						if (!isset($mqttPayload['event']) or !isset($mqttPayload['event']['type'])) {
 							log::add('traccar', 'warning', 'Message MQTT invalide (il manque la section event ou le type) : ' . $mqttMessageType . '(' . $logMsgData . ')');
-							continue;
+							continue 2;
 						}
 						if (!isset($mqttPayload['device']) or !isset($mqttPayload['device']['uniqueId'])) {
 							log::add('traccar', 'warning', 'Message MQTT invalide (il manque la section device) : ' . $mqttMessageType . '(' . $logMsgData . ')');
-							continue;
+							continue 2;
 						}
 						$traccarUniqueId = $mqttPayload['device']['uniqueId'];
 						$traccarEventType = $mqttPayload['event']['type'];
@@ -314,15 +326,15 @@ class traccar extends eqLogic {
 
 						if (!isset($mqttPayload['position'])) {
 							log::add('traccar', 'warning', 'Message MQTT invalide (il manque la section position) : ' . $mqttMessageType . '(' . $logMsgData . ')');
-							continue;
+							continue 2;
 						}
 						if (!isset($mqttPayload['device']) or !isset($mqttPayload['device']['uniqueId'])) {
 							log::add('traccar', 'warning', 'Message MQTT invalide (il manque la section device) : ' . $mqttMessageType . '(' . $logMsgData . ')');
-							continue;
+							continue 2;
 						}
 						if (!isset($mqttPayload['position']['latitude']) or !isset($mqttPayload['position']['longitude']) or !isset($mqttPayload['position']['speed']) or !isset($mqttPayload['position']['attributes'])) {
 							log::add('traccar', 'warning', 'Message MQTT invalide (il manque la section attributes ou les champs latitude, longitude ou speed) : ' . $mqttMessageType . '(' . $logMsgData . ')');
-							continue;
+							continue 2;
 						}
 						// Récupère le traccar
 						$traccarUniqueId = $mqttPayload['device']['uniqueId'];
