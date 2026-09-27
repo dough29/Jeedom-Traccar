@@ -171,9 +171,16 @@ class traccar extends eqLogic {
 	 * @param int $uniqueId: un identifier associé à l'objet dans l'application traccar
 	 */
 	public static function getTraccarByUniqueId($uniqueId) {
+		// Garde : un uniqueId vide ne peut pas identifier un tracker (byLogicalId renverrait
+		// un non-objet, et les accès aux getters plus bas provoqueraient une erreur fatale).
+		if (empty($uniqueId)) {
+			log::add('traccar', 'error', 'Identifiant de tracker vide reçu, requête ignorée');
+			throw new Exception(__('Traccar - identifiant de tracker vide', __FILE__));
+		}
+
 		$traccar = traccar::byLogicalId($uniqueId, 'traccar');
 
-		if (!is_object($traccar) && null != $uniqueId) {
+		if (!is_object($traccar)) {
 			log::add('traccar', 'error', 'Tracker inconnu - tracker ' . $uniqueId . ' -> création automatique');
 
 			log::add('traccar', 'debug', 'Création de l\'équipement - tracker ' . $uniqueId);
